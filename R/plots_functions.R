@@ -42,7 +42,23 @@ plot_res <- function(model, na.rm = FALSE, margin = 0.04){
     stop("The model residuals has missing values, please either check the residuals or set na.rm = TRUE")
   }
 
-  max_lag <- ifelse(stats::frequency(model$series) * 2 < base::nrow(model$series), stats::frequency(model$series) * 2, base::nrow(model$series))
+
+  int <- tsibble::interval(model$series)
+  if(int$year == 1){
+    max_lag <- ifelse(base::nrow(model$series) > 6, 6, base::nrow(model$series))
+  } else if(int$quarter == 1){
+    max_lag <- ifelse(base::nrow(model$series) > 4 * 4, 4 * 4, base::nrow(model$series))
+  } else if(int$month == 1){
+    max_lag <- ifelse(base::nrow(model$series) > 12 * 4, 12 * 4, base::nrow(model$series))
+  } else if(int$week == 1){
+    max_lag <- ifelse(base::nrow(model$series) > 12 * 4, 12 * 4, base::nrow(model$series))
+  } else if(int$day == 1){
+    max_lag <- ifelse(base::nrow(model$series) > 365 * 2, 365 * 2, base::nrow(model$series))
+  } else if(int$day == 7){
+    max_lag <- ifelse(base::nrow(model$series) > 52 * 2, 52 * 2, base::nrow(model$series))
+  } else if(int$hour == 1){
+    max_lag <- ifelse(base::nrow(model$series) > 24 * 2, 24 * 2, base::nrow(model$series))
+  }
   p3 <- forecastLM::tsACF(model$residuals, na.rm = na.rm, plot = FALSE, max.lag = max_lag)
 
   p4 <- plotly::plot_ly(x = model$residuals$residuals, type = "histogram",
