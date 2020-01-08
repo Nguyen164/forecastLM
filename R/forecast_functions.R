@@ -55,6 +55,7 @@ trainLM <- function(input,
                     seasonal = NULL,
                     trend = list(linear = TRUE, exponential = FALSE, log = FALSE, power = FALSE),
                     lags = NULL,
+                    knots = NULL,
                     events = NULL,
                     scale = NULL,
                     step = FALSE,
@@ -150,6 +151,21 @@ trainLM <- function(input,
     for(n in base::names(events)){
       if(!base::any(freq$class %in% base::class(events[[n]]))){
         stop("The date/time object of the 'events' argument does not align with the ones of the input object")
+      } else {
+        df[n] <- 0
+        df[base::which(df[,time_stamp , drop = TRUE] %in% events[[n]]), n] <- 1
+        new_features <- c(new_features, n)
+      }
+    }
+  }
+
+  #----------------Checking the knots argument----------------
+  if(!base::is.null(knots) && !base::is.list(knots)){
+    stop("The 'knots' argument is not valid, please use list")
+  } else if(!base::is.null(knots) && base::is.list(knots)){
+    for(n in base::names(knots)){
+      if(!base::any(freq$class %in% base::class(knots[[n]]))){
+        stop("The date/time object of the 'knots' argument does not align with the ones of the input object")
       } else {
         df[n] <- 0
         df[base::which(df[,time_stamp , drop = TRUE] %in% events[[n]]), n] <- 1
