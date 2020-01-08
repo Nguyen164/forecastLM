@@ -58,7 +58,16 @@ plot_res <- function(model, na.rm = FALSE, margin = 0.04){
     max_lag <- ifelse(base::nrow(model$series) > 52 * 2, 52 * 2, base::nrow(model$series))
   } else if(int$hour == 1){
     max_lag <- ifelse(base::nrow(model$series) > 24 * 2, 24 * 2, base::nrow(model$series))
+  } else if(int$minute == 15){
+    max_lag <- ifelse(base::nrow(model$series) > 15 * 4* 24 * 2, 15 * 4* 24 * 2, base::nrow(model$series))
+  } else if(int$minute == 30){
+    max_lag <- ifelse(base::nrow(model$series) > 30 * 2* 24 * 2, 30 * 2* 24 * 2, base::nrow(model$series))
+  } else if(int$minute == 5){
+    max_lag <- ifelse(base::nrow(model$series) > 5 * 12 * 24 * 2, 5 * 12 * 24 * 2, base::nrow(model$series))
+  } else {
+    max_lag <- ifelse(base::nrow(model$series) > 24, 24, base::nrow(model$series))
   }
+
   p3 <- forecastLM::tsACF(model$residuals, na.rm = na.rm, plot = FALSE, max.lag = max_lag)
 
   p4 <- plotly::plot_ly(x = model$residuals$residuals, type = "histogram",
