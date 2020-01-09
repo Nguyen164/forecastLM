@@ -167,8 +167,9 @@ trainLM <- function(input,
       if(!base::any(freq$class %in% base::class(knots[[n]]))){
         stop("The date/time object of the 'knots' argument does not align with the ones of the input object")
       } else {
-        df[n] <- 0
-        df[base::which(df[,time_stamp , drop = TRUE] %in% events[[n]]), n] <- 1
+        first <- NULL
+        first <- which(df[, time_stamp, drop = TRUE] > knots[[n]])[1]
+        df[n] <- base::pmax(0, 1:nrow(df) - first - 1)
         new_features <- c(new_features, n)
       }
     }
