@@ -604,6 +604,18 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
     }
   }
 
+  # Add knots
+  if(!base::is.null(model$parameters$knots)){
+    knots <- NULL
+    knots <- model$parameters$knots
+    for(n in base::names(knots)){
+      start_point <- NULL
+      start_point <- model$series[[n]][base::nrow( model$series)] + 1
+      forecast_df[n] <- start_point:(start_point + base::nrow(forecast_df) - 1)
+
+    }
+  }
+
   #---------------- Setting the seasonal arguments----------------
   seasonal <- model$parameters$seasonal
 
