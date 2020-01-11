@@ -6,8 +6,8 @@
 \usage{
 trainLM(input, y = NULL, x = NULL, seasonal = NULL,
   trend = list(linear = TRUE, exponential = FALSE, log = FALSE, power =
-  FALSE), lags = NULL, events = NULL, scale = NULL, step = FALSE,
-  ...)
+  FALSE), lags = NULL, knots = NULL, events = NULL, scale = NULL,
+  step = FALSE, ...)
 }
 \arguments{
 \item{input}{A tsibble or ts object}
@@ -48,7 +48,10 @@ By default, the `trend` argument is set to a linear trend (i.e., power = 1)}
 
 \item{lags}{A positive integer, defines the series lags to be used as input to the model (equivalent to AR process)}
 
-\item{events}{A list, an optional, create hot encoding variables based on date/time objects,
+\item{knots}{A list, optional, create a piecewise linear trend variables based on date/time objects as a starting point of each knot,
+where the date/time objects must align with the input object index class (may not work when the input object is 'ts')}
+
+\item{events}{A list, optional, create hot encoding variables based on date/time objects,
 where the date/time objects must align with the input object index class (may not work when the input object is 'ts')}
 
 \item{scale}{A character, scaling options of the series, methods available -
