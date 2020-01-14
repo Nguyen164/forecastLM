@@ -30,7 +30,7 @@ library(plotly)
 
 plot_ly(data = ny_elec,
         x = ~ date_time,
-        y = ~ series,
+        y = ~ y,
         type = "scatter",
         mode = "lines")
 

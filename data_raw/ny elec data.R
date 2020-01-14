@@ -4,7 +4,7 @@ command <- paste("curl 'http://api.eia.gov/series/?api_key=",
              sep = "")
 
 ny_elec <- utils::read.table(text = system(command = command, intern = TRUE), sep = "\t") %>%
-  stats::setNames(c("timestamp", "series")) %>%
+  stats::setNames(c("timestamp", "y")) %>%
   dplyr::mutate(date_time = lubridate::ymd_h(timestamp, tz = "UTC")) %>%
   dplyr::select(date_time, series) %>%
   dplyr::arrange(date_time) %>%
