@@ -30,12 +30,14 @@ plot_res <- function(model, na.rm = FALSE, margin = 0.04){
 
 
   p1 <- plotly::plot_ly(data = df, x = ~ index, y = ~ actual, type = "scatter", mode = "lines", name = "Actual") %>%
-    plotly::add_lines(x = ~ index, y = ~ fitted,  line = list(dash = "dash", color = "red"), name = "Fitted")
+    plotly::add_lines(x = ~ index, y = ~ fitted,  line = list(dash = "dash", color = "red"), name = "Fitted") %>%
+    plotly::layout(yaxis = list(title = "Fitted vs. Actuals"))
 
   p2 <- plotly::plot_ly(data = df, x = ~ index, y = ~ residuals,
                         type = "scatter", mode = "lines",
                         line = list(color = "green"), name = "Residuals") %>%
-    plotly::layout(xaxis = list(title = "Index", range = c(min(df$index), max(df$index))))
+    plotly::layout(yaxis = list(title = "Residuals"),
+                   xaxis = list(title = "Index", range = c(min(df$index), max(df$index))))
 
 
   if(base::any(base::is.na(model$residuals)) && na.rm == FALSE){
@@ -66,6 +68,10 @@ plot_res <- function(model, na.rm = FALSE, margin = 0.04){
     max_lag <- ifelse(base::nrow(model$series) > 5 * 12 * 24 * 2, 5 * 12 * 24 * 2, base::nrow(model$series))
   } else {
     max_lag <- ifelse(base::nrow(model$series) > 24, 24, base::nrow(model$series))
+  }
+
+  if(max_lag >= base::nrow(model$series)){
+    max_lag <- round(max_lag / 2)
   }
 
   p3 <- forecastLM::tsACF(model$residuals, na.rm = na.rm, plot = FALSE, max.lag = max_lag)
