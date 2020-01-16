@@ -82,7 +82,7 @@ plot_res <- function(model, na.rm = FALSE, margin = 0.04){
     plotly::layout(xaxis = list(title = "Residuals Distribution"),
                    yaxis = list(title = "Count"))
 
-  p_output <- plotly::subplot(plotly::subplot(p1, p2, nrows = 2, shareX = T),
+  p_output <- plotly::subplot(plotly::subplot(p1, p2, nrows = 2, shareX = T, titleY = T),
                               plotly::subplot(p3$residuals$plot, p4, nrows = 1, titleY = T, titleX = T, margin = margin ),
                               nrows = 2, titleY = T, titleX = T, margin = margin,
                               heights = c(0.6, 0.4)) %>%
