@@ -46,6 +46,54 @@
 #' @description Methods for forecasting regular time series data based on a linear regression model
 #' @details The trainLM function provides a flexible framework for forecasting regular time-series data with the linear regression model with the \code{\link[stats]{lm}} function.
 #' The function arguments enable a fast extraction and generation of new features from the input series, such as seasonal, trend, lags, outliers, and special events.
+#' @examples
+#' data(ny_gas)
+#'
+#' head(ny_gas)
+#'
+#' # Fitting basic model with linear trend
+#' md1 <- trainLM(input = ny_gas,
+#'                y = "y",
+#'                trend = list(linear = TRUE))
+#'
+#'
+#' # Getting the regression summary
+#'
+#' summary(md1$model)
+#'
+#' # Plotting the residauls of the model
+#' plot_res(md1)
+#'
+#' # Adding monthly seasonal component
+#' md2 <- trainLM(input = ny_gas,
+#'                y = "y",
+#'                trend = list(linear = TRUE),
+#'                seasonal = "month")
+#'
+#'
+#' plot_res(md2)
+#'
+#' # Adding the first and seasonal lags
+#'
+#' md3 <- trainLM(input = ny_gas,
+#'                y = "y",
+#'                trend = list(linear = TRUE),
+#'                seasonal = "month",
+#'                lags = c(1, 12))
+#'
+#' plot_res(md3)
+#'
+#' # Adding more lags and using stepwise regression for variable selection
+#' md4 <- trainLM(input = ny_gas,
+#'                y = "y",
+#'                trend = list(linear = TRUE),
+#'                seasonal = "month",
+#'                lags = c(1:12),
+#'                step = TRUE)
+#'
+#' summary(md4$model)
+#'
+#' plot_res(md4)
 
 
 
