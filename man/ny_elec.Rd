@@ -13,12 +13,12 @@ ny_elec
 }
 \description{
 The total hourly generation of electricity in the New York region since July 2015
-
+}
+\details{
 Units: megawatthours
 
 Time zone: UTC
-}
-\details{
+
 The dataset contains the hourly generation of electricity in the New York region in megawatthours.
 The series index is in UTC time zone
 }

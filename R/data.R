@@ -1,6 +1,6 @@
 #' Net Generation of Electricity for the New York Region
 #'
-#' @description  The total hourly generation of electricity in the New York region since July 2015
+#' The total hourly generation of electricity in the New York region since July 2015
 #'
 #' Units: megawatthours
 #'
@@ -27,7 +27,7 @@
 
 "ny_elec"
 
-#' @description  The New York Natural Gas Residential Monthly Consumption (1997-2019)
+#' The New York Natural Gas Residential Monthly Consumption (1997-2019)
 #'
 #' Units: Million Cubic Feet
 #'
