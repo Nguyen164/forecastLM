@@ -13,7 +13,7 @@ The forecastLM R package provides a framework for forecasting regular time-serie
 Currently, the package available only on Github version:
 
 ``` r
-remotes::install_github("RamiKrispin/USgrid")
+remotes::install_github("RamiKrispin/forecastLM")
 ```
 
 ## Examples
