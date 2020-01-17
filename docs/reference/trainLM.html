@@ -188,6 +188,52 @@ If set to NULL (default), no transformation will occur</p></td>
 The function arguments enable a fast extraction and generation of new features from the input series, such as seasonal, trend, lags, outliers, and special events.</p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>ny_gas</span>)
+
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>ny_gas</span>)</div><div class='output co'>#&gt; <span style='color: #555555;'># A tsibble: 6 x 2 [1M]</span><span>
+#&gt;    date     y
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> </span><span style='text-decoration: underline;'>1</span><span>997  </span><span style='text-decoration: underline;'>62</span><span>019
+#&gt; </span><span style='color: #555555;'>2</span><span> </span><span style='text-decoration: underline;'>1</span><span>997. </span><span style='text-decoration: underline;'>56</span><span>003
+#&gt; </span><span style='color: #555555;'>3</span><span> </span><span style='text-decoration: underline;'>1</span><span>997. </span><span style='text-decoration: underline;'>51</span><span>213
+#&gt; </span><span style='color: #555555;'>4</span><span> </span><span style='text-decoration: underline;'>1</span><span>997. </span><span style='text-decoration: underline;'>37</span><span>597
+#&gt; </span><span style='color: #555555;'>5</span><span> </span><span style='text-decoration: underline;'>1</span><span>997. </span><span style='text-decoration: underline;'>24</span><span>082
+#&gt; </span><span style='color: #555555;'>6</span><span> </span><span style='text-decoration: underline;'>1</span><span>997. </span><span style='text-decoration: underline;'>14</span><span>469</div><div class='input'>
+<span class='co'># Fitting basic model with linear trend</span>
+<span class='no'>md1</span> <span class='kw'>&lt;-</span> <span class='fu'>trainLM</span>(<span class='kw'>input</span> <span class='kw'>=</span> <span class='no'>ny_gas</span>,
+               <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"y"</span>,
+               <span class='kw'>trend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>linear</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt; <span class='error'>Error in as.data.frame.default(x[[i]], optional = TRUE): cannot coerce class ‘"yearmon"’ to a data.frame</span></div><div class='input'>
+
+<span class='co'># Getting the regression summary</span>
+
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/summary'>summary</a></span>(<span class='no'>md1</span>$<span class='no'>model</span>)</div><div class='output co'>#&gt; <span class='error'>Error in summary(md1$model): object 'md1' not found</span></div><div class='input'>
+<span class='co'># Plotting the residauls of the model</span>
+<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md1</span>)</div><div class='output co'>#&gt; <span class='error'>Error in plot_res(md1): object 'md1' not found</span></div><div class='input'>
+<span class='co'># Adding monthly seasonal component</span>
+<span class='no'>md2</span> <span class='kw'>&lt;-</span> <span class='fu'>trainLM</span>(<span class='kw'>input</span> <span class='kw'>=</span> <span class='no'>ny_gas</span>,
+               <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"y"</span>,
+               <span class='kw'>trend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>linear</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),
+               <span class='kw'>seasonal</span> <span class='kw'>=</span> <span class='st'>"month"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in as.POSIXlt.default(x, tz = tz(x)): do not know how to convert 'x' to class “POSIXlt”</span></div><div class='input'>
+
+<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md2</span>)</div><div class='output co'>#&gt; <span class='error'>Error in plot_res(md2): object 'md2' not found</span></div><div class='input'>
+<span class='co'># Adding the first and seasonal lags</span>
+
+<span class='no'>md3</span> <span class='kw'>&lt;-</span> <span class='fu'>trainLM</span>(<span class='kw'>input</span> <span class='kw'>=</span> <span class='no'>ny_gas</span>,
+               <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"y"</span>,
+               <span class='kw'>trend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>linear</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),
+               <span class='kw'>seasonal</span> <span class='kw'>=</span> <span class='st'>"month"</span>,
+               <span class='kw'>lags</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>12</span>))</div><div class='output co'>#&gt; <span class='error'>Error in as.POSIXlt.default(x, tz = tz(x)): do not know how to convert 'x' to class “POSIXlt”</span></div><div class='input'>
+<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md3</span>)</div><div class='output co'>#&gt; <span class='error'>Error in plot_res(md3): object 'md3' not found</span></div><div class='input'>
+<span class='co'># Adding more lags and using stepwise regression for variable selection</span>
+<span class='no'>md4</span> <span class='kw'>&lt;-</span> <span class='fu'>trainLM</span>(<span class='kw'>input</span> <span class='kw'>=</span> <span class='no'>ny_gas</span>,
+               <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"y"</span>,
+               <span class='kw'>trend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>linear</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),
+               <span class='kw'>seasonal</span> <span class='kw'>=</span> <span class='st'>"month"</span>,
+               <span class='kw'>lags</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>12</span>),
+               <span class='kw'>step</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in as.POSIXlt.default(x, tz = tz(x)): do not know how to convert 'x' to class “POSIXlt”</span></div><div class='input'>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/summary'>summary</a></span>(<span class='no'>md4</span>$<span class='no'>model</span>)</div><div class='output co'>#&gt; <span class='error'>Error in summary(md4$model): object 'md4' not found</span></div><div class='input'>
+<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md4</span>)</div><div class='output co'>#&gt; <span class='error'>Error in plot_res(md4): object 'md4' not found</span></div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -195,7 +241,9 @@ The function arguments enable a fast extraction and generation of new features f
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#details">Details</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>
