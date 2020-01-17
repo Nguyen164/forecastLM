@@ -47,25 +47,25 @@ plot_res <- function(model, na.rm = FALSE, margin = 0.04){
 
   int <- tsibble::interval(model$series)
   if(int$year == 1){
-    max_lag <- ifelse(base::nrow(model$series) > 6, 6, base::nrow(model$series))
+    max_lag <- ifelse(base::nrow(model$series) > 6, 6, base::nrow(model$series) - 1)
   } else if(int$quarter == 1){
-    max_lag <- ifelse(base::nrow(model$series) > 4 * 4, 4 * 4, base::nrow(model$series))
+    max_lag <- ifelse(base::nrow(model$series) > 4 * 4, 4 * 3, base::nrow(model$series) - 4)
   } else if(int$month == 1){
-    max_lag <- ifelse(base::nrow(model$series) > 12 * 4, 12 * 4, base::nrow(model$series))
+    max_lag <- ifelse(base::nrow(model$series) > 12 * 4, 12 * 3, base::nrow(model$series) - 12)
   } else if(int$week == 1){
     max_lag <- ifelse(base::nrow(model$series) > 12 * 4, 12 * 4, base::nrow(model$series))
   } else if(int$day == 1){
-    max_lag <- ifelse(base::nrow(model$series) > 365 * 2, 365 * 2, base::nrow(model$series))
+    max_lag <- ifelse(base::nrow(model$series) > 366 * 3, 365 * 2, 365)
   } else if(int$day == 7){
-    max_lag <- ifelse(base::nrow(model$series) > 52 * 2, 52 * 2, base::nrow(model$series))
+    max_lag <- ifelse(base::nrow(model$series) > 52 * 3, 52 * 2, base::nrow(model$series) - 52)
   } else if(int$hour == 1){
-    max_lag <- ifelse(base::nrow(model$series) > 24 * 2, 24 * 2, base::nrow(model$series))
+    max_lag <- ifelse(base::nrow(model$series) > 24 * 8, 24 * 7, base::nrow(model$series) - 24)
   } else if(int$minute == 15){
-    max_lag <- ifelse(base::nrow(model$series) > 15 * 4* 24 * 2, 15 * 4* 24 * 2, base::nrow(model$series))
+    max_lag <- ifelse(base::nrow(model$series) > 15 * 4 * 24 * 3, 15 * 4* 24 * 2, base::nrow(model$series) - 15 * 4 * 24)
   } else if(int$minute == 30){
-    max_lag <- ifelse(base::nrow(model$series) > 30 * 2* 24 * 2, 30 * 2* 24 * 2, base::nrow(model$series))
+    max_lag <- ifelse(base::nrow(model$series) > 30 * 2 * 24 * 3, 30 * 2 * 24 * 2, base::nrow(model$series) - 30 * 2 * 24)
   } else if(int$minute == 5){
-    max_lag <- ifelse(base::nrow(model$series) > 5 * 12 * 24 * 2, 5 * 12 * 24 * 2, base::nrow(model$series))
+    max_lag <- ifelse(base::nrow(model$series) > 5 * 12 * 24 * 3, 5 * 12 * 24 * 2, base::nrow(model$series) - 5 * 12 * 24)
   } else {
     max_lag <- ifelse(base::nrow(model$series) > 24, 24, base::nrow(model$series))
   }
