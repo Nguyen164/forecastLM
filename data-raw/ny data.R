@@ -28,7 +28,7 @@ command <- paste("curl 'http://api.eia.gov/series/?api_key=",
 
 ny_gas <- utils::read.table(text = system(command = command, intern = TRUE), sep = "\t") %>%
   stats::setNames(c("date_temp", "y")) %>%
-  dplyr::mutate(date = zoo::as.yearmon(lubridate::ymd(paste(date_temp, "01", sep = "/")))) %>%
+  dplyr::mutate(date = tsibble::yearmonth(lubridate::ymd(paste(date_temp, "01", sep = "/")))) %>%
   dplyr::select(date, y) %>%
   dplyr::arrange(date) %>%
   tsibble::as_tsibble(index = "date")
