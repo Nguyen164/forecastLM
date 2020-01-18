@@ -25,3 +25,8 @@ tsACF(input, var = NULL, max.lag = NULL, ci = 0.95, na.rm = FALSE,
 \description{
 The tsACF function calculate the estimated autocorrelation between a series and its past lags
 }
+\examples{
+data(ny_gas)
+
+tsACF(ny_gas)
+}
