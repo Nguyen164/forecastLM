@@ -603,6 +603,25 @@ trainLM <- function(input,
 #' @param h An integer, define the forecast horizon
 #' @param pi A vector with numeric values between 0 and 1, define the level of the confidence of the prediction intervals of the forecast. By default calculate the 80\% and 95\% prediction intervals
 #' @description Forecast trainML models
+#' @examples
+#' data(ny_gas)
+#'
+#' head(ny_gas)
+#'
+#' # Training a model
+#' md <- trainLM(input = ny_gas,
+#'               y = "y",
+#'               trend = list(linear = TRUE),
+#'               seasonal = "month",
+#'               lags = c(1, 12))
+#'
+#' # Forecasting the future observations
+#' fc <- forecastLM(model = md,
+#'                  h = 60)
+#'
+#' # Plotting the forecast
+#' plot_fc(fc)
+
 
 forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
   #----------------Set variables and functions----------------
