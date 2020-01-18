@@ -5,10 +5,16 @@
 #' @param margin A numeric, define the margin space between the subplot components
 #' @examples
 #'
-#' # Train a time series forecasting model
-#' md <- trainLM(input = AirPassengers,
-#'               trend = list(log = TRUE, linear = TRUE),
-#'               seasonal = "month")
+#' data(ny_gas)
+#'
+#' head(ny_gas)
+#'
+#' # Training a model
+#' md <- trainLM(input = ny_gas,
+#'               y = "y",
+#'               trend = list(linear = TRUE),
+#'               seasonal = "month",
+#'               lags = c(1, 12))
 #'
 #' # create a residuals plot
 #' plot_res(md)
