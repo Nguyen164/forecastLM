@@ -192,48 +192,255 @@ The function arguments enable a fast extraction and generation of new features f
     <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>ny_gas</span>)
 
 <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>ny_gas</span>)</div><div class='output co'>#&gt; <span style='color: #555555;'># A tsibble: 6 x 2 [1M]</span><span>
-#&gt;    date     y
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span> </span><span style='text-decoration: underline;'>1</span><span>997  </span><span style='text-decoration: underline;'>62</span><span>019
-#&gt; </span><span style='color: #555555;'>2</span><span> </span><span style='text-decoration: underline;'>1</span><span>997. </span><span style='text-decoration: underline;'>56</span><span>003
-#&gt; </span><span style='color: #555555;'>3</span><span> </span><span style='text-decoration: underline;'>1</span><span>997. </span><span style='text-decoration: underline;'>51</span><span>213
-#&gt; </span><span style='color: #555555;'>4</span><span> </span><span style='text-decoration: underline;'>1</span><span>997. </span><span style='text-decoration: underline;'>37</span><span>597
-#&gt; </span><span style='color: #555555;'>5</span><span> </span><span style='text-decoration: underline;'>1</span><span>997. </span><span style='text-decoration: underline;'>24</span><span>082
-#&gt; </span><span style='color: #555555;'>6</span><span> </span><span style='text-decoration: underline;'>1</span><span>997. </span><span style='text-decoration: underline;'>14</span><span>469</div><div class='input'>
+#&gt;       date     y
+#&gt;      </span><span style='color: #555555;font-style: italic;'>&lt;mth&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> 1997 Jan </span><span style='text-decoration: underline;'>62</span><span>019
+#&gt; </span><span style='color: #555555;'>2</span><span> 1997 Feb </span><span style='text-decoration: underline;'>56</span><span>003
+#&gt; </span><span style='color: #555555;'>3</span><span> 1997 Mar </span><span style='text-decoration: underline;'>51</span><span>213
+#&gt; </span><span style='color: #555555;'>4</span><span> 1997 Apr </span><span style='text-decoration: underline;'>37</span><span>597
+#&gt; </span><span style='color: #555555;'>5</span><span> 1997 May </span><span style='text-decoration: underline;'>24</span><span>082
+#&gt; </span><span style='color: #555555;'>6</span><span> 1997 Jun </span><span style='text-decoration: underline;'>14</span><span>469</div><div class='input'>
 <span class='co'># Fitting basic model with linear trend</span>
 <span class='no'>md1</span> <span class='kw'>&lt;-</span> <span class='fu'>trainLM</span>(<span class='kw'>input</span> <span class='kw'>=</span> <span class='no'>ny_gas</span>,
                <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"y"</span>,
-               <span class='kw'>trend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>linear</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt; <span class='error'>Error in as.data.frame.default(x[[i]], optional = TRUE): cannot coerce class ‘"yearmon"’ to a data.frame</span></div><div class='input'>
+               <span class='kw'>trend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>linear</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
+
 
 <span class='co'># Getting the regression summary</span>
 
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/summary'>summary</a></span>(<span class='no'>md1</span>$<span class='no'>model</span>)</div><div class='output co'>#&gt; <span class='error'>Error in summary(md1$model): object 'md1' not found</span></div><div class='input'>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/summary'>summary</a></span>(<span class='no'>md1</span>$<span class='no'>model</span>)</div><div class='output co'>#&gt; 
+#&gt; Call:
+#&gt; stats::lm(formula = f, data = df1)
+#&gt; 
+#&gt; Residuals:
+#&gt;    Min     1Q Median     3Q    Max 
+#&gt; -26110 -21610  -6838  22721  56175 
+#&gt; 
+#&gt; Coefficients:
+#&gt;              Estimate Std. Error t value Pr(&gt;|t|)    
+#&gt; (Intercept)  30750.03    2811.67  10.937   &lt;2e-16 ***
+#&gt; linear_trend    19.18      17.73   1.082     0.28    
+#&gt; ---
+#&gt; Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#&gt; 
+#&gt; Residual standard error: 23210 on 272 degrees of freedom
+#&gt; Multiple R-squared:  0.004288,	Adjusted R-squared:  0.0006274 
+#&gt; F-statistic: 1.171 on 1 and 272 DF,  p-value: 0.2801
+#&gt; </div><div class='input'>
 <span class='co'># Plotting the residauls of the model</span>
-<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md1</span>)</div><div class='output co'>#&gt; <span class='error'>Error in plot_res(md1): object 'md1' not found</span></div><div class='input'>
+<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md1</span>)
+
 <span class='co'># Adding monthly seasonal component</span>
 <span class='no'>md2</span> <span class='kw'>&lt;-</span> <span class='fu'>trainLM</span>(<span class='kw'>input</span> <span class='kw'>=</span> <span class='no'>ny_gas</span>,
                <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"y"</span>,
                <span class='kw'>trend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>linear</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),
-               <span class='kw'>seasonal</span> <span class='kw'>=</span> <span class='st'>"month"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in as.POSIXlt.default(x, tz = tz(x)): do not know how to convert 'x' to class “POSIXlt”</span></div><div class='input'>
+               <span class='kw'>seasonal</span> <span class='kw'>=</span> <span class='st'>"month"</span>)
 
-<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md2</span>)</div><div class='output co'>#&gt; <span class='error'>Error in plot_res(md2): object 'md2' not found</span></div><div class='input'>
+
+<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md2</span>)
+
 <span class='co'># Adding the first and seasonal lags</span>
 
 <span class='no'>md3</span> <span class='kw'>&lt;-</span> <span class='fu'>trainLM</span>(<span class='kw'>input</span> <span class='kw'>=</span> <span class='no'>ny_gas</span>,
                <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"y"</span>,
                <span class='kw'>trend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>linear</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),
                <span class='kw'>seasonal</span> <span class='kw'>=</span> <span class='st'>"month"</span>,
-               <span class='kw'>lags</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>12</span>))</div><div class='output co'>#&gt; <span class='error'>Error in as.POSIXlt.default(x, tz = tz(x)): do not know how to convert 'x' to class “POSIXlt”</span></div><div class='input'>
-<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md3</span>)</div><div class='output co'>#&gt; <span class='error'>Error in plot_res(md3): object 'md3' not found</span></div><div class='input'>
+               <span class='kw'>lags</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>12</span>))
+
+<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md3</span>)
+
 <span class='co'># Adding more lags and using stepwise regression for variable selection</span>
 <span class='no'>md4</span> <span class='kw'>&lt;-</span> <span class='fu'>trainLM</span>(<span class='kw'>input</span> <span class='kw'>=</span> <span class='no'>ny_gas</span>,
                <span class='kw'>y</span> <span class='kw'>=</span> <span class='st'>"y"</span>,
                <span class='kw'>trend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>linear</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),
                <span class='kw'>seasonal</span> <span class='kw'>=</span> <span class='st'>"month"</span>,
                <span class='kw'>lags</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>12</span>),
-               <span class='kw'>step</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in as.POSIXlt.default(x, tz = tz(x)): do not know how to convert 'x' to class “POSIXlt”</span></div><div class='input'>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/summary'>summary</a></span>(<span class='no'>md4</span>$<span class='no'>model</span>)</div><div class='output co'>#&gt; <span class='error'>Error in summary(md4$model): object 'md4' not found</span></div><div class='input'>
-<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md4</span>)</div><div class='output co'>#&gt; <span class='error'>Error in plot_res(md4): object 'md4' not found</span></div></span></pre>
+               <span class='kw'>step</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; Start:  AIC=4468.62
+#&gt; y ~ month + linear_trend + lag_1 + lag_2 + lag_3 + lag_4 + lag_5 + 
+#&gt;     lag_6 + lag_7 + lag_8 + lag_9 + lag_10 + lag_11 + lag_12
+#&gt; 
+#&gt;                Df  Sum of Sq        RSS    AIC
+#&gt; - lag_8         1    1629786 5530867875 4466.7
+#&gt; - lag_2         1    2457031 5531695121 4466.7
+#&gt; - lag_7         1    2738340 5531976429 4466.8
+#&gt; - lag_4         1    4198603 5533436693 4466.8
+#&gt; - lag_11        1    7092093 5536330182 4467.0
+#&gt; - lag_6         1   10993921 5540232010 4467.1
+#&gt; - lag_12        1   18089458 5547327548 4467.5
+#&gt; - lag_3         1   19086109 5548324199 4467.5
+#&gt; &lt;none&gt;                       5529238089 4468.6
+#&gt; - lag_9         1   54085827 5583323917 4469.2
+#&gt; - lag_10        1   87144282 5616382372 4470.7
+#&gt; - lag_5         1  115893388 5645131477 4472.1
+#&gt; - linear_trend  1  135204542 5664442631 4473.0
+#&gt; - lag_1         1 1366603182 6895841271 4524.5
+#&gt; - month        11 2066473167 7595711257 4529.8
+#&gt; 
+#&gt; Step:  AIC=4466.7
+#&gt; y ~ month + linear_trend + lag_1 + lag_2 + lag_3 + lag_4 + lag_5 + 
+#&gt;     lag_6 + lag_7 + lag_9 + lag_10 + lag_11 + lag_12
+#&gt; 
+#&gt;                Df  Sum of Sq        RSS    AIC
+#&gt; - lag_7         1    1565211 5532433086 4464.8
+#&gt; - lag_2         1    2677078 5533544953 4464.8
+#&gt; - lag_4         1    3894285 5534762160 4464.9
+#&gt; - lag_11        1    7816040 5538683915 4465.1
+#&gt; - lag_6         1   11035084 5541902959 4465.2
+#&gt; - lag_12        1   17532972 5548400847 4465.5
+#&gt; - lag_3         1   17752665 5548620540 4465.5
+#&gt; &lt;none&gt;                       5530867875 4466.7
+#&gt; - lag_9         1   56469216 5587337091 4467.4
+#&gt; - lag_10        1   86157748 5617025624 4468.7
+#&gt; - lag_5         1  114837087 5645704962 4470.1
+#&gt; - linear_trend  1  138428739 5669296614 4471.2
+#&gt; - lag_1         1 1365058681 6895926556 4522.5
+#&gt; - month        11 2123312306 7654180181 4529.8
+#&gt; 
+#&gt; Step:  AIC=4464.77
+#&gt; y ~ month + linear_trend + lag_1 + lag_2 + lag_3 + lag_4 + lag_5 + 
+#&gt;     lag_6 + lag_9 + lag_10 + lag_11 + lag_12
+#&gt; 
+#&gt;                Df  Sum of Sq        RSS    AIC
+#&gt; - lag_2         1    3345461 5535778547 4462.9
+#&gt; - lag_4         1    4340404 5536773489 4463.0
+#&gt; - lag_11        1    7374695 5539807781 4463.1
+#&gt; - lag_6         1    9498322 5541931408 4463.2
+#&gt; - lag_3         1   17990825 5550423910 4463.6
+#&gt; - lag_12        1   19608730 5552041815 4463.7
+#&gt; &lt;none&gt;                       5532433086 4464.8
+#&gt; - lag_9         1   62222260 5594655345 4465.7
+#&gt; - lag_10        1   85044654 5617477740 4466.8
+#&gt; - lag_5         1  115824274 5648257360 4468.2
+#&gt; - linear_trend  1  137057229 5669490315 4469.2
+#&gt; - lag_1         1 1363493475 6895926561 4520.5
+#&gt; - month        11 2175652664 7708085750 4529.7
+#&gt; 
+#&gt; Step:  AIC=4462.93
+#&gt; y ~ month + linear_trend + lag_1 + lag_3 + lag_4 + lag_5 + lag_6 + 
+#&gt;     lag_9 + lag_10 + lag_11 + lag_12
+#&gt; 
+#&gt;                Df  Sum of Sq        RSS    AIC
+#&gt; - lag_4         1    4439915 5540218462 4461.1
+#&gt; - lag_11        1    6130765 5541909312 4461.2
+#&gt; - lag_6         1    9239131 5545017677 4461.4
+#&gt; - lag_12        1   22760158 5558538705 4462.0
+#&gt; - lag_3         1   29724197 5565502744 4462.3
+#&gt; &lt;none&gt;                       5535778547 4462.9
+#&gt; - lag_9         1   63617534 5599396081 4463.9
+#&gt; - lag_10        1   86905698 5622684244 4465.0
+#&gt; - lag_5         1  113901407 5649679954 4466.3
+#&gt; - linear_trend  1  140852389 5676630936 4467.5
+#&gt; - month        11 2196689070 7732467616 4528.5
+#&gt; - lag_1         1 1773296068 7309074615 4533.7
+#&gt; 
+#&gt; Step:  AIC=4461.14
+#&gt; y ~ month + linear_trend + lag_1 + lag_3 + lag_5 + lag_6 + lag_9 + 
+#&gt;     lag_10 + lag_11 + lag_12
+#&gt; 
+#&gt;                Df  Sum of Sq        RSS    AIC
+#&gt; - lag_11        1    6342758 5546561221 4459.4
+#&gt; - lag_6         1    8654181 5548872644 4459.6
+#&gt; - lag_12        1   22963693 5563182155 4460.2
+#&gt; - lag_3         1   25320141 5565538603 4460.3
+#&gt; &lt;none&gt;                       5540218462 4461.1
+#&gt; - lag_9         1   60161091 5600379553 4462.0
+#&gt; - lag_10        1   85187596 5625406058 4463.1
+#&gt; - linear_trend  1  137443532 5677661994 4465.6
+#&gt; - lag_5         1  158321622 5698540084 4466.5
+#&gt; - month        11 2209997778 7750216240 4527.1
+#&gt; - lag_1         1 1768882070 7309100532 4531.7
+#&gt; 
+#&gt; Step:  AIC=4459.44
+#&gt; y ~ month + linear_trend + lag_1 + lag_3 + lag_5 + lag_6 + lag_9 + 
+#&gt;     lag_10 + lag_12
+#&gt; 
+#&gt;                Df  Sum of Sq        RSS    AIC
+#&gt; - lag_6         1    7027742 5553588963 4457.8
+#&gt; - lag_3         1   24427780 5570989001 4458.6
+#&gt; &lt;none&gt;                       5546561221 4459.4
+#&gt; - lag_12        1   43962617 5590523837 4459.5
+#&gt; - lag_9         1   60198508 5606759729 4460.3
+#&gt; - lag_10        1  132668368 5679229588 4463.6
+#&gt; - linear_trend  1  143210965 5689772186 4464.1
+#&gt; - lag_5         1  155792917 5702354137 4464.7
+#&gt; - lag_1         1 1790153606 7336714827 4530.7
+#&gt; - month        11 2389580903 7936142124 4531.3
+#&gt; 
+#&gt; Step:  AIC=4457.77
+#&gt; y ~ month + linear_trend + lag_1 + lag_3 + lag_5 + lag_9 + lag_10 + 
+#&gt;     lag_12
+#&gt; 
+#&gt;                Df  Sum of Sq        RSS    AIC
+#&gt; - lag_3         1   26803252 5580392215 4457.0
+#&gt; - lag_12        1   41161451 5594750414 4457.7
+#&gt; &lt;none&gt;                       5553588963 4457.8
+#&gt; - lag_9         1   55355668 5608944631 4458.4
+#&gt; - lag_10        1  134403506 5687992468 4462.0
+#&gt; - linear_trend  1  159620884 5713209847 4463.2
+#&gt; - lag_5         1  166185873 5719774836 4463.5
+#&gt; - month        11 2386029111 7939618074 4529.4
+#&gt; - lag_1         1 1807306935 7360895898 4529.6
+#&gt; 
+#&gt; Step:  AIC=4457.04
+#&gt; y ~ month + linear_trend + lag_1 + lag_5 + lag_9 + lag_10 + lag_12
+#&gt; 
+#&gt;                Df  Sum of Sq        RSS    AIC
+#&gt; - lag_12        1   37449744 5617841959 4456.8
+#&gt; &lt;none&gt;                       5580392215 4457.0
+#&gt; - lag_9         1   65019043 5645411258 4458.1
+#&gt; - lag_10        1  135183409 5715575623 4461.3
+#&gt; - lag_5         1  141281752 5721673967 4461.6
+#&gt; - linear_trend  1  193153650 5773545865 4464.0
+#&gt; - lag_1         1 2136734094 7717126308 4540.0
+#&gt; - month        11 3152036395 8732428609 4552.4
+#&gt; 
+#&gt; Step:  AIC=4456.79
+#&gt; y ~ month + linear_trend + lag_1 + lag_5 + lag_9 + lag_10
+#&gt; 
+#&gt;                Df  Sum of Sq        RSS    AIC
+#&gt; &lt;none&gt;                       5.6178e+09 4456.8
+#&gt; - lag_9         1   60812664 5.6787e+09 4457.6
+#&gt; - lag_5         1  157502924 5.7753e+09 4462.0
+#&gt; - lag_10        1  170908172 5.7888e+09 4462.6
+#&gt; - linear_trend  1  227206510 5.8450e+09 4465.2
+#&gt; - lag_1         1 2389598793 8.0074e+09 4547.6
+#&gt; - month        11 6227113156 1.1845e+10 4630.2</div><div class='input'>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/summary'>summary</a></span>(<span class='no'>md4</span>$<span class='no'>model</span>)</div><div class='output co'>#&gt; 
+#&gt; Call:
+#&gt; stats::lm(formula = y ~ month + linear_trend + lag_1 + lag_5 + 
+#&gt;     lag_9 + lag_10, data = df1)
+#&gt; 
+#&gt; Residuals:
+#&gt;    Min     1Q Median     3Q    Max 
+#&gt; -15595  -2180     -9   2013  15990 
+#&gt; 
+#&gt; Coefficients:
+#&gt;                Estimate Std. Error t value Pr(&gt;|t|)    
+#&gt; (Intercept)   3.365e+04  4.283e+03   7.857 1.24e-13 ***
+#&gt; monthFeb     -1.077e+04  1.961e+03  -5.491 9.99e-08 ***
+#&gt; monthMar     -1.276e+04  2.454e+03  -5.201 4.19e-07 ***
+#&gt; monthApr     -2.694e+04  2.936e+03  -9.173  &lt; 2e-16 ***
+#&gt; monthMay     -2.764e+04  3.736e+03  -7.398 2.19e-12 ***
+#&gt; monthJun     -2.484e+04  4.527e+03  -5.488 1.01e-07 ***
+#&gt; monthJul     -2.334e+04  4.524e+03  -5.160 5.09e-07 ***
+#&gt; monthAug     -2.334e+04  4.279e+03  -5.455 1.20e-07 ***
+#&gt; monthSep     -2.636e+04  3.705e+03  -7.116 1.22e-11 ***
+#&gt; monthOct     -2.345e+04  3.445e+03  -6.805 7.69e-11 ***
+#&gt; monthNov     -1.346e+04  2.811e+03  -4.789 2.90e-06 ***
+#&gt; monthDec     -2.702e+03  2.071e+03  -1.305  0.19320    
+#&gt; linear_trend  1.524e+01  4.842e+00   3.148  0.00185 ** 
+#&gt; lag_1         5.344e-01  5.234e-02  10.208  &lt; 2e-16 ***
+#&gt; lag_5        -1.390e-01  5.303e-02  -2.621  0.00932 ** 
+#&gt; lag_9        -1.023e-01  6.282e-02  -1.629  0.10470    
+#&gt; lag_10        1.758e-01  6.438e-02   2.730  0.00679 ** 
+#&gt; ---
+#&gt; Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#&gt; 
+#&gt; Residual standard error: 4789 on 245 degrees of freedom
+#&gt; Multiple R-squared:  0.9607,	Adjusted R-squared:  0.9581 
+#&gt; F-statistic: 374.1 on 16 and 245 DF,  p-value: &lt; 2.2e-16
+#&gt; </div><div class='input'>
+<span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md4</span>)</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
