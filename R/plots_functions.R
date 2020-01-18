@@ -105,10 +105,17 @@ plot_res <- function(model, na.rm = FALSE, margin = 0.04){
 #' @return A plotly object
 #' @examples
 #'
+#' # Load the data
+#' data(ny_gas)
+#'
+#' head(ny_gas)
+#'
 #' # Train a time series forecasting model
-#' md <- trainLM(input = AirPassengers,
-#'               trend = list(log = TRUE, linear = TRUE),
-#'               seasonal = "month")
+#' md <- trainLM(input = ny_gas,
+#'               y = "y",
+#'               trend = list(linear = TRUE),
+#'               seasonal = "month",
+#'               lags = c(1, 12))
 #'
 #' fc <- forecastLM(model = md, h = 60)
 #'
