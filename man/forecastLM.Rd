@@ -24,3 +24,22 @@ forecastLM(model, newdata = NULL, h, pi = c(0.95, 0.8))
 \description{
 Forecast trainML models
 }
+\examples{
+data(ny_gas)
+
+head(ny_gas)
+
+# Training a model
+md <- trainLM(input = ny_gas,
+              y = "y",
+              trend = list(linear = TRUE),
+              seasonal = "month",
+              lags = c(1, 12))
+
+# Forecasting the future observations
+fc <- forecastLM(model = md,
+                 h = 60)
+
+# Plotting the forecast
+plot_fc(fc)
+}
