@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![CRAN status](https://www.r-pkg.org/badges/version/USgrid)](https://cran.r-project.org/package=forecastLM)
+[![CRAN status](https://www.r-pkg.org/badges/version/forecastLM)](https://cran.r-project.org/package=forecastLM)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
