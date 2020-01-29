@@ -27,6 +27,17 @@ library(forecastLM)
 data("ny_gas")
 ```
 
+
+```{r}
+head(ny_gas)
+
+class(ny_gas)
+```
+
+
+
+
+
 ```{r fig.width=8}
 library(TSstudio)
 
@@ -40,7 +51,7 @@ ts_plot(ny_gas,
 
 
 ```{r}
-md <- trainLM(input = ny_gas, 
+md1 <- trainLM(input = ny_gas, 
               y = "y",
               seasonal = "month",
               trend = list(linear = TRUE))
@@ -48,27 +59,77 @@ md <- trainLM(input = ny_gas,
 
 
 ```{r}
-names(md)
+names(md1)
 ```
 
 ```{r}
-summary(md$model)
+summary(md1$model)
 ```
+
+```{r}
+plot_fit(md1)
+```
+
+```{r fig.height=8, fig.width=8}
+plot_res(md1)
+```
+
+
+```{r}
+
+events <- list(outlier = c(as.Date("2015-01-01"), as.Date("2015-02-01"), as.Date("2018-01-01"), as.Date("2019-01-01")))
+```
+
+
+
+```{r}
+md2 <- trainLM(input = ny_gas, 
+              y = "y",
+              seasonal = "month",
+              trend = list(linear = TRUE),
+              events = events)
+```
+
 
 
 
 ```{r fig.height=8, fig.width=8}
-plot_res(md)
+plot_res(md2)
 ```
 
 
 ```{r}
-fc <- forecastLM(md, h = 60)
+md3 <- trainLM(input = ny_gas, 
+              y = "y",
+              seasonal = "month",
+              trend = list(linear = TRUE),
+              events = events,
+              lags = c(1,12))
 ```
 
 
+
+
+```{r fig.height=8, fig.width=8}
+plot_res(md3)
+```
+
+
+
+
+
+
 ```{r}
-plot_fc(fc)
+fc3 <- forecastLM(md3, h = 60)
+```
+
+
+
+
+
+
+```{r}
+plot_fc(fc3)
 ```
 
 
