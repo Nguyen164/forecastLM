@@ -312,7 +312,7 @@ plot_fc <- function(forecast, theme = "normal"){
                           ymax = forecast$forecast[[paste("upper", pi[i] * 100, sep = "")]],
                           line = list(color = color_setting[[base::paste("pi", pi[i] * 100, sep = "")]]),
                           fillcolor = color_setting[[base::paste("pi", pi[i] * 100, sep = "")]],
-                          name = base::paste(pi[i] * 100, "% Prediction Interval", sep = ""))
+                          name = base::paste(pi[i] * 100, "% PI", sep = ""))
   }
 
 
