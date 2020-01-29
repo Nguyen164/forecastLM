@@ -2,6 +2,7 @@
 
 export(forecastLM)
 export(plot_fc)
+export(plot_fit)
 export(plot_res)
 export(trainLM)
 export(tsACF)
