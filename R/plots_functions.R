@@ -25,6 +25,8 @@ plot_res <- function(model, na.rm = FALSE, margin = 0.04){
   `%>%` <- magrittr::`%>%`
 
   actual <- fitted <- NULL
+
+  #----------------Error handling----------------
   if(base::class(model) != "trainLM"){
     stop("The input model is not a 'trainLM' object")
   }
@@ -338,6 +340,51 @@ plot_fc <- function(forecast, theme = "normal"){
 
   return(p)
 
+}
+
+
+#' Plotting the Fitted Values vs. Actuals
+#' @export
+#' @param model A trainLM object
+#' @description Plotting the model's fitted values against the series
+#' @examples
+#'
+#' data(ny_gas)
+#'
+#' head(ny_gas)
+#'
+#' # Training a model
+#' md <- trainLM(input = ny_gas,
+#'               y = "y",
+#'               trend = list(linear = TRUE),
+#'               seasonal = "month",
+#'               lags = c(1, 12))
+#'
+#' # plot fitted values
+#' plot_fit(md)
+#'
+plot_fit <- function(model){
+  `%>%` <- magrittr::`%>%`
+
+  p <- df <- actual <- fitted <- NULL
+
+  #----------------Error handling----------------
+  if(base::class(model) != "trainLM"){
+    stop("The input model is not a 'trainLM' object")
+  }
+
+  #----------------Data----------------
+  df <- model$series %>% dplyr::select(index = model$parameters$index, actual = model$parameters$y) %>%
+    dplyr::left_join(model$fitted, by = "index") %>%
+    dplyr::mutate(residuals = actual - fitted) %>% as.data.frame()
+
+  #----------------Plot----------------
+  p <- plotly::plot_ly(data = df, x = ~ index, y = ~ actual, type = "scatter", mode = "lines", name = "Actual") %>%
+    plotly::add_lines(x = ~ index, y = ~ fitted,  line = list(dash = "dash", color = "red"), name = "Fitted") %>%
+    plotly::layout(yaxis = list(title = "Fitted vs. Actuals"),
+                   xaxis = list(title = "Index"))
+
+  return(p)
 }
 
 
