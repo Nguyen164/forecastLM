@@ -42,7 +42,7 @@ class(ny_gas)
 library(TSstudio)
 
 ts_plot(ny_gas,
-        title = "The New York Natural Gas Residential Monthly Consumptio",
+        title = "The New York Natural Gas Residential Monthly Consumption",
         Ytitle = "Million Cubic Feet",
         Xtitle = "Source: US Energy Information Administration (Jan 2020)")
 ```

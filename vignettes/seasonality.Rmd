@@ -1,0 +1,118 @@
+---
+title: "Handling complex seasonality"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Handling complex seasonality}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width=8
+)
+```
+
+```{r setup}
+library(forecastLM)
+```
+
+```{r}
+data("ny_elec")
+
+head(ny_elec)
+
+class(ny_elec)
+```
+
+
+
+```{r fig.width=8}
+library(TSstudio)
+
+ts_plot(ny_elec,
+        title = "Net Generation of Electricity for the New York Region",
+        Ytitle = "Megawatthours",
+        Xtitle = "Source: US Energy Information Administration (Jan 2020)",
+        slider = TRUE)
+```
+
+
+
+
+```{r fig.height=8, fig.width=8}
+md1 <- trainLM(input = ny_elec,
+               y = "y",
+               seasonal = c("month"),
+               trend = list(linear = TRUE))
+
+
+plot_res(md1)
+```
+
+```{r fig.height=8, fig.width=8}
+md2 <- trainLM(input = ny_elec,
+               y = "y",
+               seasonal = c("month", "wday"),
+               trend = list(linear = TRUE))
+
+
+plot_res(md2)
+```
+
+
+```{r fig.height=8, fig.width=8}
+md3 <- trainLM(input = ny_elec,
+               y = "y",
+               seasonal = c("month", "wday", "hour"),
+               trend = list(linear = TRUE))
+
+
+plot_res(md3)
+```
+
+
+```{r fig.height=8, fig.width=8}
+md4 <- trainLM(input = ny_elec,
+               y = "y",
+               seasonal = c("month", "wday", "hour"),
+               trend = list(linear = TRUE),
+               lags = c(1:24))
+
+
+plot_res(md4)
+```
+
+
+```{r fig.height=8, fig.width=8}
+md5 <- trainLM(input = ny_elec,
+               y = "y",
+               seasonal = c("month", "wday", "hour"),
+               trend = list(linear = TRUE),
+               lags = c(1:24, 48, 72))
+
+
+plot_res(md5)
+```
+
+
+```{r}
+summary(md5)
+```
+
+```{r fig.height=8, fig.width=8}
+md6 <- trainLM(input = ny_elec,
+               y = "y",
+               seasonal = c("month", "wday", "hour"),
+               trend = list(linear = TRUE),
+               lags = c(1:24, 48, 72),
+               step = TRUE)
+
+
+plot_res(md6)
+
+summary(md6$model)
+```
+

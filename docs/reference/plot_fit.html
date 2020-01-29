@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Forecast trainML Model — forecastLM • forecastLM</title>
+<title>Plotting the Fitted Values vs. Actuals — plot_fit • forecastLM</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Forecast trainML Model — forecastLM" />
+<meta property="og:title" content="Plotting the Fitted Values vs. Actuals — plot_fit" />
 
-<meta property="og:description" content="Forecast trainML models" />
+<meta property="og:description" content="Plotting the model's fitted values against the series" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,18 +111,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Forecast trainML Model</h1>
-    <small class="dont-index">Source: <a href='https://github.com/RamiKrispin/forecastLM/blob/master/R/forecast_functions.R'><code>R/forecast_functions.R</code></a></small>
-    <div class="hidden name"><code>forecastLM.Rd</code></div>
+    <h1>Plotting the Fitted Values vs. Actuals</h1>
+    <small class="dont-index">Source: <a href='https://github.com/RamiKrispin/forecastLM/blob/master/R/plots_functions.R'><code>R/plots_functions.R</code></a></small>
+    <div class="hidden name"><code>plot_fit.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Forecast trainML models</p>
+    <p>Plotting the model's fitted values against the series</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>forecastLM</span>(<span class='no'>model</span>, <span class='kw'>newdata</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>h</span>, <span class='kw'>pi</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>0.95</span>, <span class='fl'>0.8</span>))</pre>
+    <pre class="usage"><span class='fu'>plot_fit</span>(<span class='no'>model</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -131,26 +131,12 @@
       <th>model</th>
       <td><p>A trainLM object</p></td>
     </tr>
-    <tr>
-      <th>newdata</th>
-      <td><p>A tsibble object, must be used when the input model was trained with external inputs (i.e., the 'x' argument of the trainML function was used). This input must follow the following structure:</p>
-<p>- Use the same time intervals (monthly, daily, hourly, etc.) structure and timestamp class (e.g., yearquarter, yearmonth, POSIXct, etc.) as the original input</p>
-<p>- The number of observations must align with the forecasting horizon (the 'h' argument)</p>
-<p>-  The timestamp of the first observation must be the consecutive observation of the last observation of the original series</p></td>
-    </tr>
-    <tr>
-      <th>h</th>
-      <td><p>An integer, define the forecast horizon</p></td>
-    </tr>
-    <tr>
-      <th>pi</th>
-      <td><p>A vector with numeric values between 0 and 1, define the level of the confidence of the prediction intervals of the forecast. By default calculate the 80% and 95% prediction intervals</p></td>
-    </tr>
     </table>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>ny_gas</span>)
+    <pre class="examples"><div class='input'>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>ny_gas</span>)
 
 <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>ny_gas</span>)</div><div class='output co'>#&gt; <span style='color: #555555;'># A tsibble: 6 x 2 [1M]</span><span>
 #&gt;       date     y
@@ -168,12 +154,8 @@
               <span class='kw'>seasonal</span> <span class='kw'>=</span> <span class='st'>"month"</span>,
               <span class='kw'>lags</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>12</span>))
 
-<span class='co'># Forecasting the future observations</span>
-<span class='no'>fc</span> <span class='kw'>&lt;-</span> <span class='fu'>forecastLM</span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>md</span>,
-                 <span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>60</span>)
-
-<span class='co'># Plotting the forecast</span>
-<span class='fu'><a href='plot_fc.html'>plot_fc</a></span>(<span class='no'>fc</span>)</div></span></pre>
+<span class='co'># plot fitted values</span>
+<span class='fu'>plot_fit</span>(<span class='no'>md</span>)</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
