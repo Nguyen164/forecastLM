@@ -1,0 +1,75 @@
+---
+title: "Introduction to the forecastLM package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to the forecastLM package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width=8
+)
+```
+
+
+
+The forecastLM package provides a framework for forecasting regular time series data with a linear regression model. This vignette introduces the basic forecasting process with the package. The following vignettes cover advanced functionalities of the package.
+
+Basic forecasting
+
+```{r setup}
+library(forecastLM)
+
+data("ny_gas")
+```
+
+```{r fig.width=8}
+library(TSstudio)
+
+ts_plot(ny_gas,
+        title = "The New York Natural Gas Residential Monthly Consumptio",
+        Ytitle = "Million Cubic Feet",
+        Xtitle = "Source: US Energy Information Administration (Jan 2020)")
+```
+
+
+
+
+```{r}
+md <- trainLM(input = ny_gas, 
+              y = "y",
+              seasonal = "month",
+              trend = list(linear = TRUE))
+```
+
+
+```{r}
+names(md)
+```
+
+```{r}
+summary(md$model)
+```
+
+
+
+```{r fig.height=8, fig.width=8}
+plot_res(md)
+```
+
+
+```{r}
+fc <- forecastLM(md, h = 60)
+```
+
+
+```{r}
+plot_fc(fc)
+```
+
+
+
