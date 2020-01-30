@@ -102,17 +102,5 @@ plot_res(md5)
 summary(md5)
 ```
 
-```{r fig.height=8, fig.width=8}
-md6 <- trainLM(input = ny_elec,
-               y = "y",
-               seasonal = c("month", "wday", "hour"),
-               trend = list(linear = TRUE),
-               lags = c(1:24, 48, 72),
-               step = TRUE)
 
-
-plot_res(md6)
-
-summary(md6$model)
-```
 
