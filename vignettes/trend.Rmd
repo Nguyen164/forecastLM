@@ -87,4 +87,12 @@ plot_fit(md5)
 head(md5$series)
 tail(md5$series)
 ```
+```{r}
+md6 <- trainLM(input = USgas,
+               seasonal = "month",
+               trend = list(linear = TRUE, log = FALSE, power = NULL),
+               knots = list(break1 =  as.Date("2010-01-01")))
+
+plot_fit(md6)
+```
 
