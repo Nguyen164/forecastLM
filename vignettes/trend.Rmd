@@ -1,0 +1,90 @@
+---
+title: "Handling the Series Trend"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Handling the Series Trend}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+   fig.width=8
+)
+```
+
+```{r setup}
+library(forecastLM)
+```
+
+
+
+```{r}
+library(TSstudio)
+data(USgas)
+
+ts_info(USgas)
+
+ts_plot(USgas,
+        title = "US Monthly Natural Gas Consumption",
+        Xtitle = "U.S. Bureau of Transportation Statistics, Natural Gas Consumption [NATURALGAS]",
+        Ytitle = "Billion Cubic Feet"
+        )
+```
+
+
+
+
+```{r fig.height=6, fig.width=8}
+ts_decompose(USgas)
+```
+
+
+
+
+
+```{r}
+md1 <- trainLM(input = USgas,
+               trend = list(linear = TRUE))
+
+plot_fit(md1)
+```
+
+
+
+```{r}
+md2 <- trainLM(input = USgas,
+               trend = list(linear = FALSE, log = TRUE))
+
+plot_fit(md2)
+```
+
+
+```{r}
+md3 <- trainLM(input = USgas,
+               trend = list(linear = TRUE, log = TRUE))
+
+plot_fit(md3)
+```
+
+```{r}
+md4 <- trainLM(input = USgas,
+               trend = list(linear = FALSE, log = FALSE, power = 1:3))
+
+plot_fit(md4)
+```
+
+```{r}
+md5 <- trainLM(input = USgas,
+               trend = list(linear = TRUE, log = FALSE, power = NULL),
+               knots = list(break1 =  as.Date("2010-01-01")))
+
+plot_fit(md5)
+
+
+head(md5$series)
+tail(md5$series)
+```
+

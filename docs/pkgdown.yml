@@ -4,4 +4,5 @@ pkgdown_sha: ~
 articles:
   intro: intro.html
   seasonality: seasonality.html
+  trend: trend.html
 
