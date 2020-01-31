@@ -10,10 +10,61 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width=8
 )
 ```
 
 ```{r setup}
 library(forecastLM)
 ```
+
+
+```{r}
+data("ny_gas")
+
+library(TSstudio)
+
+ts_plot(ny_gas,
+        title = "The New York Natural Gas Residential Monthly Consumption",
+        Ytitle = "Million Cubic Feet",
+        Xtitle = "Source: US Energy Information Administration (Jan 2020)")
+
+```
+
+
+```{r}
+md <- trainLM(input = ny_gas, 
+              y = "y",
+              seasonal = "month",
+              trend = list(linear = TRUE),
+              lags = c(1,12))
+
+fc <- forecastLM(md, h = 60)
+```
+
+```{r}
+plot_fc(fc)
+```
+
+
+```{r}
+plot_fc(fc, theme = "classic")
+```
+
+
+```{r}
+plot_fc(fc, theme = "darkBlue")
+```
+
+
+```{r}
+plot_fc(fc, theme = "darkPink")
+```
+
+
+
+```{r}
+plot_fc(fc, theme = "lightBeige")
+```
+
