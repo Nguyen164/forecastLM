@@ -114,7 +114,7 @@ trainLM <- function(input,
 
   freq <- md <- time_stamp <- new_features <- residuals <- scaling_parameters <- fitted  <- NULL
   #----------------Error handling----------------
-  # Check the trend argument
+  # Checking the trend argument
 
   if(!base::is.list(trend) || !all(base::names(trend) %in% c("linear", "exponential", "log", "power"))){
     stop("The 'trend' argument is not valid")
@@ -176,6 +176,10 @@ trainLM <- function(input,
   # Check the input class
   if(base::any(base::class(input) == "tbl_ts")){
     df <- input
+    # Check the y argument
+    if(is.null(y) || !y %in% base::names(df)){
+      stop("The 'y' argument is missing or not exists on the 'input' object")
+    }
   } else if(any(class(input) == "ts")){
     y <- base::deparse(base::substitute(input))
     df <- tsibble::as_tsibble(input) %>% stats::setNames(c("index", y))
