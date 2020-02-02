@@ -1,8 +1,8 @@
 ---
-title: "Plotting Forecast"
+title: "Forecast Plotting"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Plotting Forecast}
+  %\VignetteIndexEntry{Forecast Plotting}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
