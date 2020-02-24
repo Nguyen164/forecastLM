@@ -95,22 +95,22 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>Currently, the package available only on Github version:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">install_github</a></span>(<span class="st">"RamiKrispin/forecastLM"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>remotes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">install_github</a></span>(<span class="st">"RamiKrispin/forecastLM"</span>)</span></code></pre></div>
 </div>
 <div id="examples" class="section level2">
 <h2 class="hasAnchor">
 <a href="#examples" class="anchor"></a>Examples</h2>
 <p>Forecasting the monthly demand for natural gas in the US:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Loading the data from the TSstudio package</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(TSstudio)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(<span class="st">"USgas"</span>)</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/TSstudio/topics/ts_plot">ts_plot</a></span>(USgas, </a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">        <span class="dt">title =</span> <span class="st">"The Monthly Demand for Natural Gas in the US"</span>,</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">        <span class="dt">Ytitle =</span> <span class="st">"Billion Cubic Feet"</span>,</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">        <span class="dt">Xtitle =</span> <span class="st">"Source: U.S. Bureau of Transportation Statistics, Natural Gas Consumption [NATURALGAS]"</span>,</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">        <span class="dt">Ygrid =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">        <span class="dt">Xgrid =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Loading the data from the TSstudio package</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(TSstudio)</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(<span class="st">"USgas"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/TSstudio/topics/ts_plot">ts_plot</a></span>(USgas, </span>
+<span id="cb2-6"><a href="#cb2-6"></a>        <span class="dt">title =</span> <span class="st">"The Monthly Demand for Natural Gas in the US"</span>,</span>
+<span id="cb2-7"><a href="#cb2-7"></a>        <span class="dt">Ytitle =</span> <span class="st">"Billion Cubic Feet"</span>,</span>
+<span id="cb2-8"><a href="#cb2-8"></a>        <span class="dt">Xtitle =</span> <span class="st">"Source: U.S. Bureau of Transportation Statistics, Natural Gas Consumption [NATURALGAS]"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9"></a>        <span class="dt">Ygrid =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb2-10"><a href="#cb2-10"></a>        <span class="dt">Xgrid =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <p><img src="reference/figures/USgas_plot.png" width="100%"></p>
 <p>Train a forecasting model using the following features:</p>
 <ul>
@@ -120,12 +120,12 @@
 <li>Applying log transformation to the series</li>
 <li>Using stepwise function for variables selection</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">md &lt;-<span class="st"> </span><span class="kw"><a href="reference/trainLM.html">trainLM</a></span>(<span class="dt">input =</span> USgas,</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">              <span class="dt">trend =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">linear =</span> <span class="ot">TRUE</span>),</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">              <span class="dt">seasonal =</span> <span class="st">"month"</span>,</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">              <span class="dt">lags =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">12</span>),</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">              <span class="dt">scale =</span> <span class="st">"log"</span>,</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">              <span class="dt">step =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>md &lt;-<span class="st"> </span><span class="kw"><a href="reference/trainLM.html">trainLM</a></span>(<span class="dt">input =</span> USgas,</span>
+<span id="cb3-2"><a href="#cb3-2"></a>              <span class="dt">trend =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">linear =</span> <span class="ot">TRUE</span>),</span>
+<span id="cb3-3"><a href="#cb3-3"></a>              <span class="dt">seasonal =</span> <span class="st">"month"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4"></a>              <span class="dt">lags =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">12</span>),</span>
+<span id="cb3-5"><a href="#cb3-5"></a>              <span class="dt">scale =</span> <span class="st">"log"</span>,</span>
+<span id="cb3-6"><a href="#cb3-6"></a>              <span class="dt">step =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <pre><code>Start:  AIC=-1364.47
 USgas_log ~ month + linear_trend + lag_scale1 + lag_scale12
 
@@ -136,7 +136,7 @@ USgas_log ~ month + linear_trend + lag_scale1 + lag_scale12
 - lag_scale1    1  0.214653 0.643757 -1276.02
 - month        11  0.414224 0.843328 -1235.80</code></pre>
 <p>The function returns a list contains the model, fitted values, residuals, the input series, and the model parameters. The output of the model can be view with the <code>summary</code> function:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(md<span class="op">$</span>model)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(md<span class="op">$</span>model)</span></code></pre></div>
 <pre><code>Call:
 stats::lm(formula = USgas_log ~ month + linear_trend + lag_scale1 + 
     lag_scale12, data = df1)
@@ -175,7 +175,7 @@ F-statistic: 312.84 on 14 and 208 DF,  p-value: &lt; 0.000000000000000222</code>
 <li>Residuals correlation (ACF)</li>
 <li>Residuals distribution</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="reference/plot_res.html">plot_res</a></span>(md)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw"><a href="reference/plot_res.html">plot_res</a></span>(md)</span></code></pre></div>
 <p><img src="reference/figures/res_plot.png" width="100%"></p>
 <p>The <code>forecastLM</code> function forecast the future observation of the input object, and the <code>plot_fc</code> returns a plot of the forecast:</p>
 <pre><code>fc &lt;- forecastLM(md, h = 60)
