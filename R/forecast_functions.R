@@ -212,20 +212,46 @@ trainLM <- function(input,
   }
 
   #----------------Checking the knots argument----------------
-  if(!base::is.null(knots) && !base::is.list(knots)){
-    stop("The 'knots' argument is not valid, please use list")
-  } else if(!base::is.null(knots) && base::is.list(knots)){
-    for(n in base::names(knots)){
-      if(!base::any(freq$class %in% base::class(knots[[n]]))){
-        stop("The date/time object of the 'knots' argument does not align with the ones of the input object")
-      } else {
-        first <- NULL
-        first <- which(df[, time_stamp, drop = TRUE] > knots[[n]])[1]
-        df[n] <- base::pmax(0, 1:nrow(df) - first - 1)
-        new_features <- c(new_features, n)
-      }
+  for(n in base::names(knots)){
+
+    if(!"type" %in% names(knots[[n]])){
+      stop(paste("The",
+                 n,
+                 "element of the 'knots' argument is missing the 'type' sub-argument",
+                 sep = " "))
+    } else if(knots[[n]]$type != "linear" && knots[[n]]$type != "break"){
+      stop(paste("The 'type' sub-argument of the",
+                 n, "element is not valid, can be either 'linear' or 'break'"))
     }
+
+    if(!"knots" %in% names(knots[[n]])){
+      stop(paste("The",
+                 n,
+                 "element of the 'knots' argument is missing the 'knots' sub-argument",
+                 sep = " "))
+    } else if(!base::any(freq$class %in% base::class(knots[[n]]$knots))){
+      stop(base::paste("The date/time object of the 'knots' argument does not align with the ones of the input object. Please check 'knots' input class of the",
+                       n, "element"))
+    }
+
+    #----------------Creating the knots features----------------
+    knots_vec <- c(min(df[, time_stamp, drop = TRUE]), knots[[n]]$knots)
+
+
+
+    for(k in 2:base::length(knots_vec)){
+
+
+      knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
+                                  df[, time_stamp, drop = TRUE] <  knots_vec[k])
+      df[knot_index, base::paste(n, k-1, sep = "_")] <- knot_index - base::min(knot_index) + 1
+
+    }
+
+    knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[base::length(knots_vec)])
+    df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- knot_index - min(knot_index) + 1
   }
+
   #----------------Scalling the series----------------
   if(!base::is.null(scale)){
     y_temp <- NULL
