@@ -751,9 +751,6 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
           forecast_df[n] <- base::max(model$series[n])
         }
       }
-
-
-
     }
   }
 
