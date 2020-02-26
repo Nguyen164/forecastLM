@@ -48,8 +48,14 @@ By default, the `trend` argument is set to a linear trend (i.e., power = 1)}
 
 \item{lags}{A positive integer, defines the series lags to be used as input to the model (equivalent to AR process)}
 
-\item{knots}{A list, optional, create a piecewise linear trend variables based on date/time objects as a starting point of each knot,
-where the date/time objects must align with the input object index class (may not work when the input object is 'ts')}
+\item{knots}{A list, optional, provides the ability to model structural shifts or breaks of the series trend with the use of spline or piecewise regression.
+The argument enables to define either single or multiple splines /piecewise regression by setting for each one as a list with the following two arguments:
+type - defines the spline feature. For a linear model of the trend segments, set type argument as `linear`.
+For a structural break or shift of the trend, set the type argument as `break`.
+knots - a single or sequence of dates/time that represents the breaking point of the trend (either slope shift or structural break).
+Note when using `tsibble`` object as input, the dates or time inputs must align with the series index class.
+When using `ts` object, the input class should align with the converted index of the `ts`` object.
+For example, if the frequency of the `ts` object is 12 (i.e., monthly), you should use `Date`` objects to set the knots}
 
 \item{events}{A list, optional, create hot encoding variables based on date/time objects,
 where the date/time objects must align with the input object index class (may not work when the input object is 'ts')}
