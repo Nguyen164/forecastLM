@@ -243,11 +243,13 @@ trainLM <- function(input,
         knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
                                     df[, time_stamp, drop = TRUE] <  knots_vec[k])
         df[knot_index, base::paste(n, k-1, sep = "_")] <- knot_index - base::min(knot_index) + 1
+        new_features <- c(new_features, base::paste(n, k-1, sep = "_"))
 
       }
 
       knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[base::length(knots_vec)])
       df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- knot_index - min(knot_index) + 1
+      new_features <- c(new_features, base::paste(n, base::length(knots_vec), sep = "_"))
 
     } else if(knots[[n]]$type == "break"){
       for(k in 2:base::length(knots_vec)){
@@ -256,11 +258,13 @@ trainLM <- function(input,
         knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
                                     df[, time_stamp, drop = TRUE] <  knots_vec[k])
         df[knot_index, base::paste(n, k-1, sep = "_")] <- k - 2
+        new_features <- c(new_features, base::paste(n, k-1, sep = "_"))
 
       }
 
       knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[base::length(knots_vec)])
       df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- k - 1
+      new_features <- c(new_features, base::paste(n, base::length(knots_vec), sep = "_"))
 
     }
   }
