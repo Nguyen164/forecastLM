@@ -234,22 +234,35 @@ trainLM <- function(input,
                        n, "element"))
     }
 
-    #----------------Creating the knots features----------------
+    #----------------Creating the ----------------
     knots_vec <- c(min(df[, time_stamp, drop = TRUE]), knots[[n]]$knots)
 
 
+    if(knots[[n]]$type == "linear"){
+      for(k in 2:base::length(knots_vec)){
+        knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
+                                    df[, time_stamp, drop = TRUE] <  knots_vec[k])
+        df[knot_index, base::paste(n, k-1, sep = "_")] <- knot_index - base::min(knot_index) + 1
 
-    for(k in 2:base::length(knots_vec)){
+      }
+
+      knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[base::length(knots_vec)])
+      df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- knot_index - min(knot_index) + 1
+
+    } else if(knots[[n]]$type == "break"){
+      for(k in 2:base::length(knots_vec)){
 
 
-      knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
-                                  df[, time_stamp, drop = TRUE] <  knots_vec[k])
-      df[knot_index, base::paste(n, k-1, sep = "_")] <- knot_index - base::min(knot_index) + 1
+        knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
+                                    df[, time_stamp, drop = TRUE] <  knots_vec[k])
+        df[knot_index, base::paste(n, k-1, sep = "_")] <- k - 2
+
+      }
+
+      knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[base::length(knots_vec)])
+      df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- k - 1
 
     }
-
-    knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[base::length(knots_vec)])
-    df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- knot_index - min(knot_index) + 1
   }
 
   #----------------Scalling the series----------------
@@ -854,7 +867,7 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
               model$parameters$scaling_parameters$normal_min
 
             forecast_df[[base::paste("upper", 100 * pi[p], sep = "")]][i] <- fit$fit[,"upr"] *
-            (model$parameters$scaling_parameters$normal_max - model$parameters$scaling_parameters$normal_min) +
+              (model$parameters$scaling_parameters$normal_max - model$parameters$scaling_parameters$normal_min) +
               model$parameters$scaling_parameters$normal_min
 
             forecast_df$yhat[i] <-fit$fit[,"fit"] *
@@ -889,8 +902,8 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
                               interval = "prediction",
                               level = pi[p])
         if(model$parameters$scale == "log"){
-        forecast_df[[base::paste("lower", 100 * pi[p], sep = "")]] <- base::exp(fit$fit[,"lwr"])
-        forecast_df[[base::paste("upper", 100 * pi[p], sep = "")]] <- base::exp(fit$fit[,"upr"])
+          forecast_df[[base::paste("lower", 100 * pi[p], sep = "")]] <- base::exp(fit$fit[,"lwr"])
+          forecast_df[[base::paste("upper", 100 * pi[p], sep = "")]] <- base::exp(fit$fit[,"upr"])
         } else if(model$parameters$scale == "normal"){
           forecast_df[[base::paste("lower", 100 * pi[p], sep = "")]] <- fit$fit[,"lwr"] *
             (model$parameters$scaling_parameters$normal_max - model$parameters$scaling_parameters$normal_min) +
@@ -907,7 +920,7 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
       }
 
       if(model$parameters$scale == "log"){
-      forecast_df$yhat <- base::exp(fit$fit[,"fit"])
+        forecast_df$yhat <- base::exp(fit$fit[,"fit"])
       } else if(model$parameters$scale == "normal"){
         forecast_df$yhat <- fit$fit[,"fit"] *
           (model$parameters$scaling_parameters$normal_max - model$parameters$scaling_parameters$normal_min) +
