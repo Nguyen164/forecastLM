@@ -36,8 +36,14 @@
 #' @param lags A positive integer, defines the series lags to be used as input to the model (equivalent to AR process)
 #' @param events A list, optional, create hot encoding variables based on date/time objects,
 #' where the date/time objects must align with the input object index class (may not work when the input object is 'ts')
-#' @param knots A list, optional, create a piecewise linear trend variables based on date/time objects as a starting point of each knot,
-#' where the date/time objects must align with the input object index class (may not work when the input object is 'ts')
+#' @param knots A list, optional, provides the ability to model structural shifts or breaks of the series trend with the use of spline or piecewise regression.
+#' The argument enables to define either single or multiple splines /piecewise regression by setting for each one as a list with the following two arguments:
+#' type - defines the spline feature. For a linear model of the trend segments, set type argument as `linear`.
+#' For a structural break or shift of the trend, set the type argument as `break`.
+#' knots - a single or sequence of dates/time that represents the breaking point of the trend (either slope shift or structural break).
+#' Note when using `tsibble`` object as input, the dates or time inputs must align with the series index class.
+#' When using `ts` object, the input class should align with the converted index of the `ts`` object.
+#' For example, if the frequency of the `ts` object is 12 (i.e., monthly), you should use `Date`` objects to set the knots
 #' @param scale A character, scaling options of the series, methods available -
 #' c("log", "normal", "standard") for log transformation, normalization, or standardization of the series, respectively.
 #' If set to NULL (default), no transformation will occur
@@ -253,8 +259,6 @@ trainLM <- function(input,
       new_features <- c(new_features, base::paste(n, base::length(knots_vec), sep = "_"))
 
     } else if(knots[[n]]$type == "break"){
-
-
       knots_vec <- knots[[n]]$knots[base::which(knots[[n]]$knots <= base::max(df$index))] %>%
         base::sort()
       df[, n] <- 0
