@@ -244,6 +244,7 @@ trainLM <- function(input,
 
     #----------------Creating the knots featurs----------------
       knots_vec <- NULL
+      # Case type is linear
     if(knots[[n]]$type == "linear"){
       knots_vec <- c(min(df[, time_stamp, drop = TRUE]), knots[[n]]$knots)
       for(k in 2:base::length(knots_vec)){
@@ -259,7 +260,7 @@ trainLM <- function(input,
       df[, base::paste(n, base::length(knots_vec), sep = "_")] <- 0
       df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- knot_index - min(knot_index) + 1
       new_features <- c(new_features, base::paste(n, base::length(knots_vec), sep = "_"))
-
+      # Case type is break
     } else if(knots[[n]]$type == "break"){
       knots_vec <- knots[[n]]$knots[base::which(knots[[n]]$knots <= base::max(df$index))] %>%
         base::sort()
@@ -720,9 +721,9 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
     }
   }
 
-  # Add knots
+  #---------------- Set knots ----------------
   if(!base::is.null(model$parameters$knots)){
-    knots <- NULL
+    knots <- knots_vec <- NULL
     knots <- model$parameters$knots
     for(n in base::names(knots)){
       if(knots[[n]]$type == "linear"){
@@ -734,6 +735,21 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
         forecast_df[knots_var[base::length(knots_var)]] <- base::seq(from = base::max(model$series[knots_var[base::length(knots_var)]]) + 1,
                                                                by = 1,
                                                                length.out = h)
+      } else if(knots[[n]]$type == "break"){
+        knots_vec <- knots[[n]]$knots[base::which(knots[[n]]$knots > base::max(model$series$index))] %>%
+          base::sort()
+        # Case there are future knots
+        if(base::length(knots_vec) > 0 ){
+          start_value <- NULL
+          start_value <- base::max(model$series[n])
+          forecast_df[n] <- start_value
+          for(v in knots_vec){
+            start_value <- start_value + 1
+            forecast_df[base::which(forecast_df$index >= v), n] <- start_value
+          }
+        } else if(base::length(knots_vec) == 0){
+          forecast_df[n] <- base::max(model$series[n])
+        }
       }
 
 
