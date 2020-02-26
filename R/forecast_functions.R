@@ -235,10 +235,9 @@ trainLM <- function(input,
     }
 
     #----------------Creating the knots featurs----------------
-    knots_vec <- c(min(df[, time_stamp, drop = TRUE]), knots[[n]]$knots)
-
-
+      knots_vec <- NULL
     if(knots[[n]]$type == "linear"){
+      knots_vec <- c(min(df[, time_stamp, drop = TRUE]), knots[[n]]$knots)
       for(k in 2:base::length(knots_vec)){
         knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
                                     df[, time_stamp, drop = TRUE] <  knots_vec[k])
@@ -254,21 +253,15 @@ trainLM <- function(input,
       new_features <- c(new_features, base::paste(n, base::length(knots_vec), sep = "_"))
 
     } else if(knots[[n]]$type == "break"){
-      for(k in 2:base::length(knots_vec)){
 
 
-        knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
-                                    df[, time_stamp, drop = TRUE] <  knots_vec[k])
-        df[ , base::paste(n, k-1, sep = "_")] <- 0
-        df[knot_index, base::paste(n, k-1, sep = "_")] <- k - 2
-        new_features <- c(new_features, base::paste(n, k-1, sep = "_"))
-
+      knots_vec <- knots[[n]]$knots[base::which(knots[[n]]$knots <= base::max(df$index))] %>%
+        base::sort()
+      df[, n] <- 0
+      for(k in base::seq_along(knots_vec)){
+        df[base::which(df$index >= knots_vec[k]), n] <- k
       }
 
-      knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[base::length(knots_vec)])
-      df[ , base::paste(n, base::length(knots_vec), sep = "_")] <- 0
-      df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- k - 1
-      new_features <- c(new_features, base::paste(n, base::length(knots_vec), sep = "_"))
 
     }
   }
