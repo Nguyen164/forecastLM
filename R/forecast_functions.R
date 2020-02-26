@@ -707,7 +707,6 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
   }
 
   #---------------- Build future data.frame ----------------
-
   # Create the index
   forecast_df <- tsibble::new_data(model$series, n = h)
 
@@ -727,9 +726,18 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
     knots <- NULL
     knots <- model$parameters$knots
     for(n in base::names(knots)){
-      start_point <- NULL
-      start_point <- model$series[[n]][base::nrow( model$series)] + 1
-      forecast_df[n] <- start_point:(start_point + base::nrow(forecast_df) - 1)
+      if(knots[[n]]$type == "linear"){
+
+        forecast_df[base::paste(n, 1, sep = "_")] <- 0
+
+        knots_var <- paste0(n, "_", 1:(base::length(knots[[n]]$knots) + 1))
+        forecast_df[knots_var] <- 0
+        forecast_df[knots_var[base::length(knots_var)]] <- base::seq(from = base::max(model$series[knots_var[base::length(knots_var)]]) + 1,
+                                                               by = 1,
+                                                               length.out = h)
+      }
+
+
 
     }
   }
