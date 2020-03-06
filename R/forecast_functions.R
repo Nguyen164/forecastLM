@@ -36,10 +36,10 @@
 #' @param lags A positive integer, defines the series lags to be used as input to the model (equivalent to AR process)
 #' @param events A list, optional, create hot encoding variables based on date/time objects,
 #' where the date/time objects must align with the input object index class (may not work when the input object is 'ts')
-#' @param knots A list, optional, provides the ability to model structural shifts or breaks of the series trend with the use of spline or piecewise regression.
+#' @param splines A list, optional, provides the ability to model structural shifts or breaks of the series trend with the use of spline or piecewise regression.
 #' The argument enables to define either single or multiple splines /piecewise regression by setting for each one as a list with the following two arguments:
 #'
-#' type - defines the spline feature. For a linear model of the trend segments, set type argument as `linear`.
+#' type - defines the spline feature. For model a linear trend for each segments, set the type argument as `linear`.
 #' For a structural break or shift of the trend, set the type argument as `break`.
 #'
 #' knots - a single or sequence of dates/time that represents the breaking point of the trend (either slope shift or structural break).
@@ -111,7 +111,7 @@ trainLM <- function(input,
                     seasonal = NULL,
                     trend = list(linear = TRUE, exponential = FALSE, log = FALSE, power = FALSE),
                     lags = NULL,
-                    knots = NULL,
+                    splines= NULL,
                     events = NULL,
                     scale = NULL,
                     step = FALSE,
@@ -219,25 +219,24 @@ trainLM <- function(input,
     }
   }
 
-  #----------------Checking the knots argument----------------
-  for(n in base::names(knots)){
+  #----------------Checking the splines argument----------------
+  for(n in base::names(splines)){
 
-    if(!"type" %in% names(knots[[n]])){
+    if(!"type" %in% names(splines[[n]])){
       stop(paste("The",
                  n,
-                 "element of the 'knots' argument is missing the 'type' sub-argument",
+                 "element of the 'splines' argument is missing the 'type' sub-argument",
                  sep = " "))
-    } else if(knots[[n]]$type != "linear" && knots[[n]]$type != "break"){
-      stop(paste("The 'type' sub-argument of the",
-                 n, "element is not valid, can be either 'linear' or 'break'"))
+    } else if(splines[[n]]$type != "linear" && splines[[n]]$type != "break"){
+      stop(paste("The", n, "element of the 'splines' argument is not valid, can be either 'linear' or 'break'"))
     }
 
-    if(!"knots" %in% names(knots[[n]])){
+    if(!"knots" %in% names(splines[[n]])){
       stop(paste("The",
                  n,
-                 "element of the 'knots' argument is missing the 'knots' sub-argument",
+                 "element of the 'splines' argument is missing the 'knots' sub-argument",
                  sep = " "))
-    } else if(!base::any(freq$class %in% base::class(knots[[n]]$knots))){
+    } else if(!base::any(freq$class %in% base::class(splines[[n]]$knots))){
       stop(base::paste("The date/time object of the 'knots' argument does not align with the ones of the input object. Please check 'knots' input class of the",
                        n, "element"))
     }
@@ -245,8 +244,8 @@ trainLM <- function(input,
     #----------------Creating the knots featurs----------------
       knots_vec <- NULL
       # Case type is linear
-    if(knots[[n]]$type == "linear"){
-      knots_vec <- c(min(df[, time_stamp, drop = TRUE]), knots[[n]]$knots)
+    if(splines[[n]]$type == "linear"){
+      knots_vec <- c(min(df[, time_stamp, drop = TRUE]), splines[[n]]$knots)
       for(k in 2:base::length(knots_vec)){
         knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
                                     df[, time_stamp, drop = TRUE] <  knots_vec[k])
@@ -261,8 +260,8 @@ trainLM <- function(input,
       df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- knot_index - min(knot_index) + 1
       new_features <- c(new_features, base::paste(n, base::length(knots_vec), sep = "_"))
       # Case type is break
-    } else if(knots[[n]]$type == "break"){
-      knots_vec <- knots[[n]]$knots[base::which(knots[[n]]$knots <= base::max(df$index))] %>%
+    } else if(splines[[n]]$type == "break"){
+      knots_vec <- splines[[n]]$knots[base::which(splines[[n]]$knots <= base::max(df$index))] %>%
         base::sort()
       df[, n] <- 0
       for(k in base::seq_along(knots_vec)){
@@ -628,7 +627,7 @@ trainLM <- function(input,
                                    trend = trend,
                                    lags = lags,
                                    events = events,
-                                   knots = knots,
+                                   splines = splines,
                                    step = step,
                                    scale = scale,
                                    scaling_parameters = scaling_parameters,
@@ -721,22 +720,22 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
     }
   }
 
-  #---------------- Set knots ----------------
-  if(!base::is.null(model$parameters$knots)){
-    knots <- knots_vec <- NULL
-    knots <- model$parameters$knots
-    for(n in base::names(knots)){
-      if(knots[[n]]$type == "linear"){
+  #---------------- Set splines ----------------
+  if(!base::is.null(model$parameters$splines)){
+    splines <- knots_vec <- NULL
+    splines <- model$parameters$splines
+    for(n in base::names(splines)){
+      if(splines[[n]]$type == "linear"){
 
         forecast_df[base::paste(n, 1, sep = "_")] <- 0
 
-        knots_var <- paste0(n, "_", 1:(base::length(knots[[n]]$knots) + 1))
+        knots_var <- paste0(n, "_", 1:(base::length(splines[[n]]$knots) + 1))
         forecast_df[knots_var] <- 0
         forecast_df[knots_var[base::length(knots_var)]] <- base::seq(from = base::max(model$series[knots_var[base::length(knots_var)]]) + 1,
                                                                by = 1,
                                                                length.out = h)
-      } else if(knots[[n]]$type == "break"){
-        knots_vec <- knots[[n]]$knots[base::which(knots[[n]]$knots > base::max(model$series$index))] %>%
+      } else if(splines[[n]]$type == "break"){
+        knots_vec <- splines[[n]]$knots[base::which(splines[[n]]$knots > base::max(model$series$index))] %>%
           base::sort()
         # Case there are future knots
         if(base::length(knots_vec) > 0 ){
