@@ -6,7 +6,7 @@
 \usage{
 trainLM(input, y = NULL, x = NULL, seasonal = NULL,
   trend = list(linear = TRUE, exponential = FALSE, log = FALSE, power =
-  FALSE), lags = NULL, knots = NULL, events = NULL, scale = NULL,
+  FALSE), lags = NULL, splines = NULL, events = NULL, scale = NULL,
   step = FALSE, ...)
 }
 \arguments{
@@ -48,10 +48,10 @@ By default, the `trend` argument is set to a linear trend (i.e., power = 1)}
 
 \item{lags}{A positive integer, defines the series lags to be used as input to the model (equivalent to AR process)}
 
-\item{knots}{A list, optional, provides the ability to model structural shifts or breaks of the series trend with the use of spline or piecewise regression.
+\item{splines}{A list, optional, provides the ability to model structural shifts or breaks of the series trend with the use of spline or piecewise regression.
 The argument enables to define either single or multiple splines /piecewise regression by setting for each one as a list with the following two arguments:
 
-type - defines the spline feature. For a linear model of the trend segments, set type argument as `linear`.
+type - defines the spline feature. For model a linear trend for each segments, set the type argument as `linear`.
 For a structural break or shift of the trend, set the type argument as `break`.
 
 knots - a single or sequence of dates/time that represents the breaking point of the trend (either slope shift or structural break).
