@@ -36,8 +36,16 @@
 #' @param lags A positive integer, defines the series lags to be used as input to the model (equivalent to AR process)
 #' @param events A list, optional, create hot encoding variables based on date/time objects,
 #' where the date/time objects must align with the input object index class (may not work when the input object is 'ts')
-#' @param knots A list, optional, create a piecewise linear trend variables based on date/time objects as a starting point of each knot,
-#' where the date/time objects must align with the input object index class (may not work when the input object is 'ts')
+#' @param splines A list, optional, provides the ability to model structural shifts or breaks of the series trend with the use of spline or piecewise regression.
+#' The argument enables to define either single or multiple splines /piecewise regression by setting for each one as a list with the following two arguments:
+#'
+#' type - defines the spline feature. For model a linear trend for each segments, set the type argument as `linear`.
+#' For a structural break or shift of the trend, set the type argument as `break`.
+#'
+#' knots - a single or sequence of dates/time that represents the breaking point of the trend (either slope shift or structural break).
+#' Note when using `tsibble`` object as input, the dates or time inputs must align with the series index class.
+#' When using `ts` object, the input class should align with the converted index of the `ts`` object.
+#' For example, if the frequency of the `ts` object is 12 (i.e., monthly), you should use `Date`` objects to set the knots
 #' @param scale A character, scaling options of the series, methods available -
 #' c("log", "normal", "standard") for log transformation, normalization, or standardization of the series, respectively.
 #' If set to NULL (default), no transformation will occur
@@ -103,7 +111,7 @@ trainLM <- function(input,
                     seasonal = NULL,
                     trend = list(linear = TRUE, exponential = FALSE, log = FALSE, power = FALSE),
                     lags = NULL,
-                    knots = NULL,
+                    splines= NULL,
                     events = NULL,
                     scale = NULL,
                     step = FALSE,
@@ -211,21 +219,59 @@ trainLM <- function(input,
     }
   }
 
-  #----------------Checking the knots argument----------------
-  if(!base::is.null(knots) && !base::is.list(knots)){
-    stop("The 'knots' argument is not valid, please use list")
-  } else if(!base::is.null(knots) && base::is.list(knots)){
-    for(n in base::names(knots)){
-      if(!base::any(freq$class %in% base::class(knots[[n]]))){
-        stop("The date/time object of the 'knots' argument does not align with the ones of the input object")
-      } else {
-        first <- NULL
-        first <- which(df[, time_stamp, drop = TRUE] > knots[[n]])[1]
-        df[n] <- base::pmax(0, 1:nrow(df) - first - 1)
-        new_features <- c(new_features, n)
+  #----------------Checking the splines argument----------------
+  for(n in base::names(splines)){
+
+    if(!"type" %in% names(splines[[n]])){
+      stop(paste("The",
+                 n,
+                 "element of the 'splines' argument is missing the 'type' sub-argument",
+                 sep = " "))
+    } else if(splines[[n]]$type != "linear" && splines[[n]]$type != "break"){
+      stop(paste("The", n, "element of the 'splines' argument is not valid, can be either 'linear' or 'break'"))
+    }
+
+    if(!"knots" %in% names(splines[[n]])){
+      stop(paste("The",
+                 n,
+                 "element of the 'splines' argument is missing the 'knots' sub-argument",
+                 sep = " "))
+    } else if(!base::any(freq$class %in% base::class(splines[[n]]$knots))){
+      stop(base::paste("The date/time object of the 'knots' argument does not align with the ones of the input object. Please check 'knots' input class of the",
+                       n, "element"))
+    }
+
+    #----------------Creating the knots featurs----------------
+      knots_vec <- NULL
+      # Case type is linear
+    if(splines[[n]]$type == "linear"){
+      knots_vec <- c(min(df[, time_stamp, drop = TRUE]), splines[[n]]$knots)
+      for(k in 2:base::length(knots_vec)){
+        knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
+                                    df[, time_stamp, drop = TRUE] <  knots_vec[k])
+        df[, base::paste(n, k-1, sep = "_")] <- 0
+        df[knot_index, base::paste(n, k-1, sep = "_")] <- knot_index - base::min(knot_index) + 1
+        new_features <- c(new_features, base::paste(n, k-1, sep = "_"))
+
       }
+
+      knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[base::length(knots_vec)])
+      df[, base::paste(n, base::length(knots_vec), sep = "_")] <- 0
+      df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- knot_index - min(knot_index) + 1
+      new_features <- c(new_features, base::paste(n, base::length(knots_vec), sep = "_"))
+      # Case type is break
+    } else if(splines[[n]]$type == "break"){
+      knots_vec <- splines[[n]]$knots[base::which(splines[[n]]$knots <= base::max(df$index))] %>%
+        base::sort()
+      df[, n] <- 0
+      for(k in base::seq_along(knots_vec)){
+        df[base::which(df$index >= knots_vec[k]), n] <- k
+      }
+
+
     }
   }
+
   #----------------Scalling the series----------------
   if(!base::is.null(scale)){
     y_temp <- NULL
@@ -581,7 +627,7 @@ trainLM <- function(input,
                                    trend = trend,
                                    lags = lags,
                                    events = events,
-                                   knots = knots,
+                                   splines = splines,
                                    step = step,
                                    scale = scale,
                                    scaling_parameters = scaling_parameters,
@@ -660,7 +706,6 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
   }
 
   #---------------- Build future data.frame ----------------
-
   # Create the index
   forecast_df <- tsibble::new_data(model$series, n = h)
 
@@ -675,15 +720,36 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
     }
   }
 
-  # Add knots
-  if(!base::is.null(model$parameters$knots)){
-    knots <- NULL
-    knots <- model$parameters$knots
-    for(n in base::names(knots)){
-      start_point <- NULL
-      start_point <- model$series[[n]][base::nrow( model$series)] + 1
-      forecast_df[n] <- start_point:(start_point + base::nrow(forecast_df) - 1)
+  #---------------- Set splines ----------------
+  if(!base::is.null(model$parameters$splines)){
+    splines <- knots_vec <- NULL
+    splines <- model$parameters$splines
+    for(n in base::names(splines)){
+      if(splines[[n]]$type == "linear"){
 
+        forecast_df[base::paste(n, 1, sep = "_")] <- 0
+
+        knots_var <- paste0(n, "_", 1:(base::length(splines[[n]]$knots) + 1))
+        forecast_df[knots_var] <- 0
+        forecast_df[knots_var[base::length(knots_var)]] <- base::seq(from = base::max(model$series[knots_var[base::length(knots_var)]]) + 1,
+                                                               by = 1,
+                                                               length.out = h)
+      } else if(splines[[n]]$type == "break"){
+        knots_vec <- splines[[n]]$knots[base::which(splines[[n]]$knots > base::max(model$series$index))] %>%
+          base::sort()
+        # Case there are future knots
+        if(base::length(knots_vec) > 0 ){
+          start_value <- NULL
+          start_value <- base::max(model$series[n])
+          forecast_df[n] <- start_value
+          for(v in knots_vec){
+            start_value <- start_value + 1
+            forecast_df[base::which(forecast_df$index >= v), n] <- start_value
+          }
+        } else if(base::length(knots_vec) == 0){
+          forecast_df[n] <- base::max(model$series[n])
+        }
+      }
     }
   }
 
@@ -828,7 +894,7 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
               model$parameters$scaling_parameters$normal_min
 
             forecast_df[[base::paste("upper", 100 * pi[p], sep = "")]][i] <- fit$fit[,"upr"] *
-            (model$parameters$scaling_parameters$normal_max - model$parameters$scaling_parameters$normal_min) +
+              (model$parameters$scaling_parameters$normal_max - model$parameters$scaling_parameters$normal_min) +
               model$parameters$scaling_parameters$normal_min
 
             forecast_df$yhat[i] <-fit$fit[,"fit"] *
@@ -863,8 +929,8 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
                               interval = "prediction",
                               level = pi[p])
         if(model$parameters$scale == "log"){
-        forecast_df[[base::paste("lower", 100 * pi[p], sep = "")]] <- base::exp(fit$fit[,"lwr"])
-        forecast_df[[base::paste("upper", 100 * pi[p], sep = "")]] <- base::exp(fit$fit[,"upr"])
+          forecast_df[[base::paste("lower", 100 * pi[p], sep = "")]] <- base::exp(fit$fit[,"lwr"])
+          forecast_df[[base::paste("upper", 100 * pi[p], sep = "")]] <- base::exp(fit$fit[,"upr"])
         } else if(model$parameters$scale == "normal"){
           forecast_df[[base::paste("lower", 100 * pi[p], sep = "")]] <- fit$fit[,"lwr"] *
             (model$parameters$scaling_parameters$normal_max - model$parameters$scaling_parameters$normal_min) +
@@ -881,7 +947,7 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
       }
 
       if(model$parameters$scale == "log"){
-      forecast_df$yhat <- base::exp(fit$fit[,"fit"])
+        forecast_df$yhat <- base::exp(fit$fit[,"fit"])
       } else if(model$parameters$scale == "normal"){
         forecast_df$yhat <- fit$fit[,"fit"] *
           (model$parameters$scaling_parameters$normal_max - model$parameters$scaling_parameters$normal_min) +
