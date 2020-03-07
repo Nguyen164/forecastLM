@@ -79,7 +79,7 @@ plot_res <- function(model, na.rm = FALSE, margin = 0.04){
   }
 
   if(max_lag >= base::nrow(model$series)){
-    max_lag <- round(max_lag / 2)
+    max_lag <- round(base::nrow(model$series) / 2)
   }
 
   p3 <- forecastLM::tsACF(model$residuals, na.rm = na.rm, plot = FALSE, max.lag = max_lag)
