@@ -738,8 +738,11 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
                                                                by = 1,
                                                                length.out = h)
       } else if(splines[[n]]$type == "break"){
-        knots_vec <- splines[[n]]$knots[base::which(splines[[n]]$knots > base::max(model$series$index))] %>%
+
+        knots_vec <- splines[[n]]$knots[base::which(splines[[n]]$knots > max(model$series[, model$parameters$index, drop = TRUE]))] %>%
           base::sort()
+
+
         # Case there are future knots
         if(base::length(knots_vec) > 0 ){
           start_value <- NULL
@@ -747,7 +750,7 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
           forecast_df[n] <- start_value
           for(v in knots_vec){
             start_value <- start_value + 1
-            forecast_df[base::which(forecast_df$index >= v), n] <- start_value
+            forecast_df[base::which(forecast_df[, model$parameters$index, drop = TRUE] >= v), n] <- start_value
           }
         } else if(base::length(knots_vec) == 0){
           forecast_df[n] <- base::max(model$series[n])
