@@ -261,11 +261,14 @@ trainLM <- function(input,
       new_features <- c(new_features, base::paste(n, base::length(knots_vec), sep = "_"))
       # Case type is break
     } else if(splines[[n]]$type == "break"){
-      knots_vec <- splines[[n]]$knots[base::which(splines[[n]]$knots <= base::max(df$index))] %>%
+
+      knots_vec <- splines[[n]]$knots[base::which(splines[[n]]$knots < max(df[, time_stamp, drop = TRUE]) &
+                                                    splines[[n]]$knots > min(df[, time_stamp, drop = TRUE]))] %>%
         base::sort()
+
       df[, n] <- 0
       for(k in base::seq_along(knots_vec)){
-        df[base::which(df$index >= knots_vec[k]), n] <- k
+        df[base::which(df[, time_stamp, drop = TRUE] >= knots_vec[k]), n] <- k
       }
 
 
