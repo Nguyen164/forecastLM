@@ -271,6 +271,8 @@ trainLM <- function(input,
         df[base::which(df[, time_stamp, drop = TRUE] >= knots_vec[k]), n] <- k
       }
 
+      new_features <- c(new_features, n)
+
 
     }
   }
