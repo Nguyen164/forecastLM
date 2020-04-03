@@ -78,8 +78,8 @@ plot_fit(md4)
 
 ```{r}
 md5 <- trainLM(input = USgas,
-               trend = list(linear = TRUE, log = FALSE, power = NULL),
-               knots = list(break1 =  as.Date("2010-01-01")))
+               trend = list(linear = FALSE, log = FALSE, power = NULL),
+               splines = list(break1 =  list(type = "linear", knots = as.Date("2010-01-01"))))
 
 plot_fit(md5)
 
@@ -91,7 +91,7 @@ tail(md5$series)
 md6 <- trainLM(input = USgas,
                seasonal = "month",
                trend = list(linear = TRUE, log = FALSE, power = NULL),
-               knots = list(break1 =  as.Date("2010-01-01")))
+               splines = list(break1 =  list(type = "linear", knots = as.Date("2010-01-01"))))
 
 plot_fit(md6)
 ```

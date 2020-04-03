@@ -4,6 +4,7 @@
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/forecastLM)](https://cran.r-project.org/package=forecastLM)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![GitHub commit](https://img.shields.io/github/last-commit/RamiKrispin/forecastLM)](https://github.com/RamiKrispin/forecastLM/commit/master)
 <!-- badges: end -->
 
 The forecastLM R package provides a framework for forecasting regular time-series data with linear regression models (based on the lm function). It supports both `tsibble` and `ts` objects as an input.
