@@ -4,8 +4,15 @@
 \alias{tsACF}
 \title{Autocorrelation Function}
 \usage{
-tsACF(input, var = NULL, max.lag = NULL, ci = 0.95, na.rm = FALSE,
-  width = 0.01, plot = TRUE)
+tsACF(
+  input,
+  var = NULL,
+  max.lag = NULL,
+  ci = 0.95,
+  na.rm = FALSE,
+  width = 0.01,
+  plot = TRUE
+)
 }
 \arguments{
 \item{input}{A tsibble object}

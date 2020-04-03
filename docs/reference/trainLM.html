@@ -8,11 +8,13 @@
 
 <title>Training a Forecasting Model with Linear Regression Framework — trainLM • forecastLM</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -30,10 +32,11 @@
 
 
 
-<meta property="og:title" content="Training a Forecasting Model with Linear Regression Framework — trainLM" />
 
+<meta property="og:title" content="Training a Forecasting Model with Linear Regression Framework — trainLM" />
 <meta property="og:description" content="Methods for forecasting regular time series data based on a linear regression model" />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -100,7 +103,6 @@
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/RamiKrispin/forecastLM">
@@ -126,16 +128,14 @@
     </div>
 
     <div class="ref-description">
-    
     <p>Methods for forecasting regular time series data based on a linear regression model</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>trainLM</span>(<span class='no'>input</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>seasonal</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>trend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>linear</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>exponential</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>log</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>power</span> <span class='kw'>=</span>
-  <span class='fl'>FALSE</span>), <span class='kw'>lags</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>knots</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>events</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='fl'>FALSE</span>), <span class='kw'>lags</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>splines</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>events</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>step</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -178,9 +178,15 @@ By default set to NULL</p>
       <td><p>A positive integer, defines the series lags to be used as input to the model (equivalent to AR process)</p></td>
     </tr>
     <tr>
-      <th>knots</th>
-      <td><p>A list, optional, create a piecewise linear trend variables based on date/time objects as a starting point of each knot,
-where the date/time objects must align with the input object index class (may not work when the input object is 'ts')</p></td>
+      <th>splines</th>
+      <td><p>A list, optional, provides the ability to model structural shifts or breaks of the series trend with the use of spline or piecewise regression.
+The argument enables to define either single or multiple splines /piecewise regression by setting for each one as a list with the following two arguments:</p>
+<p>type - defines the spline feature. For model a linear trend for each segments, set the type argument as `linear`.
+For a structural break or shift of the trend, set the type argument as `break`.</p>
+<p>knots - a single or sequence of dates/time that represents the breaking point of the trend (either slope shift or structural break).
+Note when using `tsibble`` object as input, the dates or time inputs must align with the series index class.
+When using `ts` object, the input class should align with the converted index of the `ts`` object.
+For example, if the frequency of the `ts` object is 12 (i.e., monthly), you should use `Date`` objects to set the knots</p></td>
     </tr>
     <tr>
       <th>events</th>
@@ -202,12 +208,11 @@ If set to NULL (default), no transformation will occur</p></td>
       <td><p>Optional, a list of arguments to pass to the <code><a href='https://www.rdocumentation.org/packages/stats/topics/step'>step</a></code> function</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The trainLM function provides a flexible framework for forecasting regular time-series data with the linear regression model with the <code><a href='https://www.rdocumentation.org/packages/stats/topics/lm'>lm</a></code> function.
 The function arguments enable a fast extraction and generation of new features from the input series, such as seasonal, trend, lags, outliers, and special events.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>ny_gas</span>)
@@ -235,18 +240,18 @@ The function arguments enable a fast extraction and generation of new features f
 #&gt; 
 #&gt; Residuals:
 #&gt;    Min     1Q Median     3Q    Max 
-#&gt; -26110 -21610  -6838  22721  56175 
+#&gt; -27370 -21542  -6345  22692  55294 
 #&gt; 
 #&gt; Coefficients:
 #&gt;              Estimate Std. Error t value Pr(&gt;|t|)    
-#&gt; (Intercept)  30750.03    2811.67  10.937   &lt;2e-16 ***
-#&gt; linear_trend    19.18      17.73   1.082     0.28    
+#&gt; (Intercept)  30101.85    2808.10  10.720   &lt;2e-16 ***
+#&gt; linear_trend    26.20      17.51   1.496    0.136    
 #&gt; ---
 #&gt; Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 #&gt; 
-#&gt; Residual standard error: 23210 on 272 degrees of freedom
-#&gt; Multiple R-squared:  0.004288,	Adjusted R-squared:  0.0006274 
-#&gt; F-statistic: 1.171 on 1 and 272 DF,  p-value: 0.2801
+#&gt; Residual standard error: 23300 on 275 degrees of freedom
+#&gt; Multiple R-squared:  0.008074,	Adjusted R-squared:  0.004467 
+#&gt; F-statistic: 2.238 on 1 and 275 DF,  p-value: 0.1358
 #&gt; </div><div class='input'>
 <span class='co'># Plotting the residauls of the model</span>
 <span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md1</span>)
@@ -276,190 +281,179 @@ The function arguments enable a fast extraction and generation of new features f
                <span class='kw'>trend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>linear</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),
                <span class='kw'>seasonal</span> <span class='kw'>=</span> <span class='st'>"month"</span>,
                <span class='kw'>lags</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>12</span>),
-               <span class='kw'>step</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; Start:  AIC=4468.62
+               <span class='kw'>step</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; Start:  AIC=4528.57
 #&gt; y ~ month + linear_trend + lag_1 + lag_2 + lag_3 + lag_4 + lag_5 + 
 #&gt;     lag_6 + lag_7 + lag_8 + lag_9 + lag_10 + lag_11 + lag_12
 #&gt; 
 #&gt;                Df  Sum of Sq        RSS    AIC
-#&gt; - lag_8         1    1629786 5530867875 4466.7
-#&gt; - lag_2         1    2457031 5531695121 4466.7
-#&gt; - lag_7         1    2738340 5531976429 4466.8
-#&gt; - lag_4         1    4198603 5533436693 4466.8
-#&gt; - lag_11        1    7092093 5536330182 4467.0
-#&gt; - lag_6         1   10993921 5540232010 4467.1
-#&gt; - lag_12        1   18089458 5547327548 4467.5
-#&gt; - lag_3         1   19086109 5548324199 4467.5
-#&gt; &lt;none&gt;                       5529238089 4468.6
-#&gt; - lag_9         1   54085827 5583323917 4469.2
-#&gt; - lag_10        1   87144282 5616382372 4470.7
-#&gt; - lag_5         1  115893388 5645131477 4472.1
-#&gt; - linear_trend  1  135204542 5664442631 4473.0
-#&gt; - lag_1         1 1366603182 6895841271 4524.5
-#&gt; - month        11 2066473167 7595711257 4529.8
+#&gt; - lag_2         1     337090 5793758744 4526.6
+#&gt; - lag_4         1    3105556 5796527210 4526.7
+#&gt; - lag_8         1    4798094 5798219748 4526.8
+#&gt; - lag_7         1    9093498 5802515152 4527.0
+#&gt; - lag_11        1   12684502 5806106156 4527.1
+#&gt; - lag_6         1   12938759 5806360413 4527.2
+#&gt; - lag_12        1   21024489 5814446143 4527.5
+#&gt; - lag_3         1   33099600 5826521254 4528.1
+#&gt; &lt;none&gt;                       5793421654 4528.6
+#&gt; - lag_9         1   45100935 5838522589 4528.6
+#&gt; - lag_10        1   85876052 5879297706 4530.5
+#&gt; - lag_5         1  119772165 5913193819 4532.0
+#&gt; - linear_trend  1  140768290 5934189944 4532.9
+#&gt; - lag_1         1 1377572660 7170994314 4583.1
+#&gt; - month        11 2042112108 7835533763 4586.6
 #&gt; 
-#&gt; Step:  AIC=4466.7
-#&gt; y ~ month + linear_trend + lag_1 + lag_2 + lag_3 + lag_4 + lag_5 + 
-#&gt;     lag_6 + lag_7 + lag_9 + lag_10 + lag_11 + lag_12
-#&gt; 
-#&gt;                Df  Sum of Sq        RSS    AIC
-#&gt; - lag_7         1    1565211 5532433086 4464.8
-#&gt; - lag_2         1    2677078 5533544953 4464.8
-#&gt; - lag_4         1    3894285 5534762160 4464.9
-#&gt; - lag_11        1    7816040 5538683915 4465.1
-#&gt; - lag_6         1   11035084 5541902959 4465.2
-#&gt; - lag_12        1   17532972 5548400847 4465.5
-#&gt; - lag_3         1   17752665 5548620540 4465.5
-#&gt; &lt;none&gt;                       5530867875 4466.7
-#&gt; - lag_9         1   56469216 5587337091 4467.4
-#&gt; - lag_10        1   86157748 5617025624 4468.7
-#&gt; - lag_5         1  114837087 5645704962 4470.1
-#&gt; - linear_trend  1  138428739 5669296614 4471.2
-#&gt; - lag_1         1 1365058681 6895926556 4522.5
-#&gt; - month        11 2123312306 7654180181 4529.8
-#&gt; 
-#&gt; Step:  AIC=4464.77
-#&gt; y ~ month + linear_trend + lag_1 + lag_2 + lag_3 + lag_4 + lag_5 + 
-#&gt;     lag_6 + lag_9 + lag_10 + lag_11 + lag_12
-#&gt; 
-#&gt;                Df  Sum of Sq        RSS    AIC
-#&gt; - lag_2         1    3345461 5535778547 4462.9
-#&gt; - lag_4         1    4340404 5536773489 4463.0
-#&gt; - lag_11        1    7374695 5539807781 4463.1
-#&gt; - lag_6         1    9498322 5541931408 4463.2
-#&gt; - lag_3         1   17990825 5550423910 4463.6
-#&gt; - lag_12        1   19608730 5552041815 4463.7
-#&gt; &lt;none&gt;                       5532433086 4464.8
-#&gt; - lag_9         1   62222260 5594655345 4465.7
-#&gt; - lag_10        1   85044654 5617477740 4466.8
-#&gt; - lag_5         1  115824274 5648257360 4468.2
-#&gt; - linear_trend  1  137057229 5669490315 4469.2
-#&gt; - lag_1         1 1363493475 6895926561 4520.5
-#&gt; - month        11 2175652664 7708085750 4529.7
-#&gt; 
-#&gt; Step:  AIC=4462.93
+#&gt; Step:  AIC=4526.58
 #&gt; y ~ month + linear_trend + lag_1 + lag_3 + lag_4 + lag_5 + lag_6 + 
+#&gt;     lag_7 + lag_8 + lag_9 + lag_10 + lag_11 + lag_12
+#&gt; 
+#&gt;                Df  Sum of Sq        RSS    AIC
+#&gt; - lag_4         1    3087682 5796846426 4524.7
+#&gt; - lag_8         1    4662499 5798421243 4524.8
+#&gt; - lag_7         1    8776507 5802535251 4525.0
+#&gt; - lag_6         1   12807126 5806565870 4525.2
+#&gt; - lag_11        1   13716246 5807474990 4525.2
+#&gt; - lag_12        1   20696514 5814455258 4525.5
+#&gt; - lag_3         1   36232633 5829991377 4526.2
+#&gt; &lt;none&gt;                       5793758744 4526.6
+#&gt; - lag_9         1   44793857 5838552601 4526.6
+#&gt; - lag_10        1   85563041 5879321785 4528.5
+#&gt; - lag_5         1  121071439 5914830183 4530.1
+#&gt; - linear_trend  1  140614667 5934373411 4530.9
+#&gt; - month        11 2079203070 7872961814 4585.8
+#&gt; - lag_1         1 1703541785 7497300529 4592.9
+#&gt; 
+#&gt; Step:  AIC=4524.73
+#&gt; y ~ month + linear_trend + lag_1 + lag_3 + lag_5 + lag_6 + lag_7 + 
+#&gt;     lag_8 + lag_9 + lag_10 + lag_11 + lag_12
+#&gt; 
+#&gt;                Df  Sum of Sq        RSS    AIC
+#&gt; - lag_8         1    4244935 5801091361 4522.9
+#&gt; - lag_7         1    9376841 5806223267 4523.2
+#&gt; - lag_6         1   12710637 5809557063 4523.3
+#&gt; - lag_11        1   14068483 5810914909 4523.4
+#&gt; - lag_12        1   20688777 5817535203 4523.7
+#&gt; - lag_3         1   33963818 5830810244 4524.3
+#&gt; - lag_9         1   42172556 5839018982 4524.6
+#&gt; &lt;none&gt;                       5796846426 4524.7
+#&gt; - lag_10        1   84400560 5881246986 4526.6
+#&gt; - linear_trend  1  138308669 5935155095 4529.0
+#&gt; - lag_5         1  161848690 5958695116 4530.0
+#&gt; - month        11 2105368658 7902215084 4584.8
+#&gt; - lag_1         1 1700796960 7497643386 4590.9
+#&gt; 
+#&gt; Step:  AIC=4522.92
+#&gt; y ~ month + linear_trend + lag_1 + lag_3 + lag_5 + lag_6 + lag_7 + 
 #&gt;     lag_9 + lag_10 + lag_11 + lag_12
 #&gt; 
 #&gt;                Df  Sum of Sq        RSS    AIC
-#&gt; - lag_4         1    4439915 5540218462 4461.1
-#&gt; - lag_11        1    6130765 5541909312 4461.2
-#&gt; - lag_6         1    9239131 5545017677 4461.4
-#&gt; - lag_12        1   22760158 5558538705 4462.0
-#&gt; - lag_3         1   29724197 5565502744 4462.3
-#&gt; &lt;none&gt;                       5535778547 4462.9
-#&gt; - lag_9         1   63617534 5599396081 4463.9
-#&gt; - lag_10        1   86905698 5622684244 4465.0
-#&gt; - lag_5         1  113901407 5649679954 4466.3
-#&gt; - linear_trend  1  140852389 5676630936 4467.5
-#&gt; - month        11 2196689070 7732467616 4528.5
-#&gt; - lag_1         1 1773296068 7309074615 4533.7
+#&gt; - lag_7         1    6029808 5807121168 4521.2
+#&gt; - lag_6         1   12830119 5813921480 4521.5
+#&gt; - lag_11        1   14983446 5816074807 4521.6
+#&gt; - lag_12        1   20345128 5821436489 4521.8
+#&gt; - lag_3         1   31240855 5832332216 4522.3
+#&gt; - lag_9         1   38217452 5839308812 4522.7
+#&gt; &lt;none&gt;                       5801091361 4522.9
+#&gt; - lag_10        1   84231235 5885322596 4524.7
+#&gt; - linear_trend  1  144099484 5945190845 4527.4
+#&gt; - lag_5         1  158555665 5959647026 4528.1
+#&gt; - month        11 2159392317 7960483678 4584.8
+#&gt; - lag_1         1 1697649607 7498740968 4588.9
 #&gt; 
-#&gt; Step:  AIC=4461.14
+#&gt; Step:  AIC=4521.19
 #&gt; y ~ month + linear_trend + lag_1 + lag_3 + lag_5 + lag_6 + lag_9 + 
 #&gt;     lag_10 + lag_11 + lag_12
 #&gt; 
 #&gt;                Df  Sum of Sq        RSS    AIC
-#&gt; - lag_11        1    6342758 5546561221 4459.4
-#&gt; - lag_6         1    8654181 5548872644 4459.6
-#&gt; - lag_12        1   22963693 5563182155 4460.2
-#&gt; - lag_3         1   25320141 5565538603 4460.3
-#&gt; &lt;none&gt;                       5540218462 4461.1
-#&gt; - lag_9         1   60161091 5600379553 4462.0
-#&gt; - lag_10        1   85187596 5625406058 4463.1
-#&gt; - linear_trend  1  137443532 5677661994 4465.6
-#&gt; - lag_5         1  158321622 5698540084 4466.5
-#&gt; - month        11 2209997778 7750216240 4527.1
-#&gt; - lag_1         1 1768882070 7309100532 4531.7
+#&gt; - lag_6         1    7873732 5814994900 4519.6
+#&gt; - lag_11        1   13452358 5820573526 4519.8
+#&gt; - lag_12        1   25529986 5832651154 4520.4
+#&gt; - lag_3         1   32891889 5840013057 4520.7
+#&gt; &lt;none&gt;                       5807121168 4521.2
+#&gt; - lag_9         1   45566962 5852688131 4521.3
+#&gt; - lag_10        1   81980878 5889102047 4522.9
+#&gt; - linear_trend  1  138705952 5945827120 4525.4
+#&gt; - lag_5         1  163064609 5970185778 4526.5
+#&gt; - month        11 2198506428 8005627597 4584.3
+#&gt; - lag_1         1 1703838083 7510959252 4587.4
 #&gt; 
-#&gt; Step:  AIC=4459.44
-#&gt; y ~ month + linear_trend + lag_1 + lag_3 + lag_5 + lag_6 + lag_9 + 
-#&gt;     lag_10 + lag_12
+#&gt; Step:  AIC=4519.55
+#&gt; y ~ month + linear_trend + lag_1 + lag_3 + lag_5 + lag_9 + lag_10 + 
+#&gt;     lag_11 + lag_12
 #&gt; 
 #&gt;                Df  Sum of Sq        RSS    AIC
-#&gt; - lag_6         1    7027742 5553588963 4457.8
-#&gt; - lag_3         1   24427780 5570989001 4458.6
-#&gt; &lt;none&gt;                       5546561221 4459.4
-#&gt; - lag_12        1   43962617 5590523837 4459.5
-#&gt; - lag_9         1   60198508 5606759729 4460.3
-#&gt; - lag_10        1  132668368 5679229588 4463.6
-#&gt; - linear_trend  1  143210965 5689772186 4464.1
-#&gt; - lag_5         1  155792917 5702354137 4464.7
-#&gt; - lag_1         1 1790153606 7336714827 4530.7
-#&gt; - month        11 2389580903 7936142124 4531.3
+#&gt; - lag_11        1   11169433 5826164333 4518.1
+#&gt; - lag_12        1   24854886 5839849786 4518.7
+#&gt; - lag_3         1   35573319 5850568219 4519.2
+#&gt; - lag_9         1   40881144 5855876044 4519.4
+#&gt; &lt;none&gt;                       5814994900 4519.6
+#&gt; - lag_10        1   86725765 5901720665 4521.5
+#&gt; - linear_trend  1  156592675 5971587575 4524.6
+#&gt; - lag_5         1  172726068 5987720968 4525.3
+#&gt; - month        11 2208989904 8023984804 4582.9
+#&gt; - lag_1         1 1713215586 7528210486 4586.0
 #&gt; 
-#&gt; Step:  AIC=4457.77
+#&gt; Step:  AIC=4518.06
 #&gt; y ~ month + linear_trend + lag_1 + lag_3 + lag_5 + lag_9 + lag_10 + 
 #&gt;     lag_12
 #&gt; 
 #&gt;                Df  Sum of Sq        RSS    AIC
-#&gt; - lag_3         1   26803252 5580392215 4457.0
-#&gt; - lag_12        1   41161451 5594750414 4457.7
-#&gt; &lt;none&gt;                       5553588963 4457.8
-#&gt; - lag_9         1   55355668 5608944631 4458.4
-#&gt; - lag_10        1  134403506 5687992468 4462.0
-#&gt; - linear_trend  1  159620884 5713209847 4463.2
-#&gt; - lag_5         1  166185873 5719774836 4463.5
-#&gt; - month        11 2386029111 7939618074 4529.4
-#&gt; - lag_1         1 1807306935 7360895898 4529.6
+#&gt; - lag_3         1   33832858 5859997191 4517.6
+#&gt; - lag_9         1   40288137 5866452469 4517.9
+#&gt; &lt;none&gt;                       5826164333 4518.1
+#&gt; - lag_12        1   52449956 5878614289 4518.4
+#&gt; - lag_10        1  138343890 5964508222 4522.3
+#&gt; - linear_trend  1  161829849 5987994182 4523.3
+#&gt; - lag_5         1  175113462 6001277795 4523.9
+#&gt; - lag_1         1 1758580984 7584745317 4586.0
+#&gt; - month        11 2474223579 8300387912 4589.9
 #&gt; 
-#&gt; Step:  AIC=4457.04
+#&gt; Step:  AIC=4517.6
 #&gt; y ~ month + linear_trend + lag_1 + lag_5 + lag_9 + lag_10 + lag_12
 #&gt; 
 #&gt;                Df  Sum of Sq        RSS    AIC
-#&gt; - lag_12        1   37449744 5617841959 4456.8
-#&gt; &lt;none&gt;                       5580392215 4457.0
-#&gt; - lag_9         1   65019043 5645411258 4458.1
-#&gt; - lag_10        1  135183409 5715575623 4461.3
-#&gt; - lag_5         1  141281752 5721673967 4461.6
-#&gt; - linear_trend  1  193153650 5773545865 4464.0
-#&gt; - lag_1         1 2136734094 7717126308 4540.0
-#&gt; - month        11 3152036395 8732428609 4552.4
-#&gt; 
-#&gt; Step:  AIC=4456.79
-#&gt; y ~ month + linear_trend + lag_1 + lag_5 + lag_9 + lag_10
-#&gt; 
-#&gt;                Df  Sum of Sq        RSS    AIC
-#&gt; &lt;none&gt;                       5.6178e+09 4456.8
-#&gt; - lag_9         1   60812664 5.6787e+09 4457.6
-#&gt; - lag_5         1  157502924 5.7753e+09 4462.0
-#&gt; - lag_10        1  170908172 5.7888e+09 4462.6
-#&gt; - linear_trend  1  227206510 5.8450e+09 4465.2
-#&gt; - lag_1         1 2389598793 8.0074e+09 4547.6
-#&gt; - month        11 6227113156 1.1845e+10 4630.2</div><div class='input'>
+#&gt; &lt;none&gt;                       5859997191 4517.6
+#&gt; - lag_12        1   46792286 5906789477 4517.7
+#&gt; - lag_9         1   49405301 5909402492 4517.8
+#&gt; - lag_10        1  138424887 5998422078 4521.8
+#&gt; - lag_5         1  145037965 6005035156 4522.1
+#&gt; - linear_trend  1  198820490 6058817681 4524.4
+#&gt; - lag_1         1 2083214939 7943212130 4596.2
+#&gt; - month        11 3145083770 9005080961 4609.5</div><div class='input'>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/summary'>summary</a></span>(<span class='no'>md4</span>$<span class='no'>model</span>)</div><div class='output co'>#&gt; 
 #&gt; Call:
 #&gt; stats::lm(formula = y ~ month + linear_trend + lag_1 + lag_5 + 
-#&gt;     lag_9 + lag_10, data = df1)
+#&gt;     lag_9 + lag_10 + lag_12, data = df1)
 #&gt; 
 #&gt; Residuals:
-#&gt;    Min     1Q Median     3Q    Max 
-#&gt; -15595  -2180     -9   2013  15990 
+#&gt;      Min       1Q   Median       3Q      Max 
+#&gt; -15814.4  -2199.0    -26.3   2223.1  15024.0 
 #&gt; 
 #&gt; Coefficients:
 #&gt;                Estimate Std. Error t value Pr(&gt;|t|)    
-#&gt; (Intercept)   3.365e+04  4.283e+03   7.857 1.24e-13 ***
-#&gt; monthFeb     -1.077e+04  1.961e+03  -5.491 9.99e-08 ***
-#&gt; monthMar     -1.276e+04  2.454e+03  -5.201 4.19e-07 ***
-#&gt; monthApr     -2.694e+04  2.936e+03  -9.173  &lt; 2e-16 ***
-#&gt; monthMay     -2.764e+04  3.736e+03  -7.398 2.19e-12 ***
-#&gt; monthJun     -2.484e+04  4.527e+03  -5.488 1.01e-07 ***
-#&gt; monthJul     -2.334e+04  4.524e+03  -5.160 5.09e-07 ***
-#&gt; monthAug     -2.334e+04  4.279e+03  -5.455 1.20e-07 ***
-#&gt; monthSep     -2.636e+04  3.705e+03  -7.116 1.22e-11 ***
-#&gt; monthOct     -2.345e+04  3.445e+03  -6.805 7.69e-11 ***
-#&gt; monthNov     -1.346e+04  2.811e+03  -4.789 2.90e-06 ***
-#&gt; monthDec     -2.702e+03  2.071e+03  -1.305  0.19320    
-#&gt; linear_trend  1.524e+01  4.842e+00   3.148  0.00185 ** 
-#&gt; lag_1         5.344e-01  5.234e-02  10.208  &lt; 2e-16 ***
-#&gt; lag_5        -1.390e-01  5.303e-02  -2.621  0.00932 ** 
-#&gt; lag_9        -1.023e-01  6.282e-02  -1.629  0.10470    
-#&gt; lag_10        1.758e-01  6.438e-02   2.730  0.00679 ** 
+#&gt; (Intercept)   2.987e+04  4.815e+03   6.204 2.30e-09 ***
+#&gt; monthFeb     -9.628e+03  1.976e+03  -4.872 1.97e-06 ***
+#&gt; monthMar     -1.137e+04  2.478e+03  -4.587 7.16e-06 ***
+#&gt; monthApr     -2.429e+04  3.141e+03  -7.732 2.67e-13 ***
+#&gt; monthMay     -2.453e+04  4.052e+03  -6.055 5.19e-09 ***
+#&gt; monthJun     -2.167e+04  4.843e+03  -4.475 1.17e-05 ***
+#&gt; monthJul     -2.024e+04  4.869e+03  -4.157 4.45e-05 ***
+#&gt; monthAug     -2.029e+04  4.721e+03  -4.298 2.48e-05 ***
+#&gt; monthSep     -2.320e+04  4.412e+03  -5.258 3.16e-07 ***
+#&gt; monthOct     -2.061e+04  4.217e+03  -4.886 1.85e-06 ***
+#&gt; monthNov     -1.090e+04  3.328e+03  -3.276  0.00120 ** 
+#&gt; monthDec     -1.585e+03  2.210e+03  -0.717  0.47399    
+#&gt; linear_trend  1.444e+01  4.987e+00   2.895  0.00413 ** 
+#&gt; lag_1         5.042e-01  5.381e-02   9.371  &lt; 2e-16 ***
+#&gt; lag_5        -1.339e-01  5.417e-02  -2.473  0.01409 *  
+#&gt; lag_9        -9.074e-02  6.288e-02  -1.443  0.15027    
+#&gt; lag_10        1.583e-01  6.556e-02   2.415  0.01644 *  
+#&gt; lag_12        8.055e-02  5.736e-02   1.404  0.16146    
 #&gt; ---
 #&gt; Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 #&gt; 
-#&gt; Residual standard error: 4789 on 245 degrees of freedom
-#&gt; Multiple R-squared:  0.9607,	Adjusted R-squared:  0.9581 
-#&gt; F-statistic: 374.1 on 16 and 245 DF,  p-value: &lt; 2.2e-16
+#&gt; Residual standard error: 4871 on 247 degrees of freedom
+#&gt; Multiple R-squared:  0.9599,	Adjusted R-squared:  0.9572 
+#&gt; F-statistic: 348.3 on 17 and 247 DF,  p-value: &lt; 2.2e-16
 #&gt; </div><div class='input'>
 <span class='fu'><a href='plot_res.html'>plot_res</a></span>(<span class='no'>md4</span>)</div></span></pre>
   </div>
@@ -467,9 +461,7 @@ The function arguments enable a fast extraction and generation of new features f
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#details">Details</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

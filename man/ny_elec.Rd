@@ -4,7 +4,9 @@
 \name{ny_elec}
 \alias{ny_elec}
 \title{Net Generation of Electricity for the New York Region}
-\format{A tsibble object with hourly intervals}
+\format{
+A tsibble object with hourly intervals
+}
 \source{
 US Energy Information Administration (Jan 2020) \href{https://www.eia.gov/}{website}
 }

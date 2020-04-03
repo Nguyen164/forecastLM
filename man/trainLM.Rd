@@ -4,10 +4,19 @@
 \alias{trainLM}
 \title{Training a Forecasting Model with Linear Regression Framework}
 \usage{
-trainLM(input, y = NULL, x = NULL, seasonal = NULL,
-  trend = list(linear = TRUE, exponential = FALSE, log = FALSE, power =
-  FALSE), lags = NULL, splines = NULL, events = NULL, scale = NULL,
-  step = FALSE, ...)
+trainLM(
+  input,
+  y = NULL,
+  x = NULL,
+  seasonal = NULL,
+  trend = list(linear = TRUE, exponential = FALSE, log = FALSE, power = FALSE),
+  lags = NULL,
+  splines = NULL,
+  events = NULL,
+  scale = NULL,
+  step = FALSE,
+  ...
+)
 }
 \arguments{
 \item{input}{A tsibble or ts object}

@@ -4,7 +4,7 @@
 # Pulling the net generation of electricity for the New York region
 command <- paste("curl 'http://api.eia.gov/series/?api_key=",
                  eia_key,
-             "&series_id=EBA.NY-ALL.NG.H&out=json&end=20191231' | jq -r '.series[].data[] | @tsv'",
+             "&series_id=EBA.NY-ALL.NG.H&out=json&end=20200331' | jq -r '.series[].data[] | @tsv'",
              sep = "")
 
 ny_elec <- utils::read.table(text = system(command = command, intern = TRUE), sep = "\t") %>%
@@ -14,6 +14,7 @@ ny_elec <- utils::read.table(text = system(command = command, intern = TRUE), se
   dplyr::arrange(date_time) %>%
   tsibble::as_tsibble(index = "date_time")
 
+head(ny_elec)
 tail(ny_elec)
 
 table(is.na(ny_elec))
@@ -23,7 +24,7 @@ usethis::use_data(ny_elec, overwrite = TRUE)
 # Pulling the New York natural gas residential consumption
 command <- paste("curl 'http://api.eia.gov/series/?api_key=",
                  eia_key,
-                 "&series_id=NG.N3010NY2.M&out=json&start=19970101&end=20191201' | jq -r '.series[].data[] | @tsv'",
+                 "&series_id=NG.N3010NY2.M&out=json&start=19970101&end=20200331' | jq -r '.series[].data[] | @tsv'",
                  sep = "")
 
 ny_gas <- utils::read.table(text = system(command = command, intern = TRUE), sep = "\t") %>%

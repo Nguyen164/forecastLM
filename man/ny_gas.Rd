@@ -4,7 +4,9 @@
 \name{ny_gas}
 \alias{ny_gas}
 \title{The New York Natural Gas Residential Monthly Consumption (1997-2019)}
-\format{A tsibble object with monthly intervals}
+\format{
+A tsibble object with monthly intervals
+}
 \source{
 US Energy Information Administration (Jan 2020) \href{https://www.eia.gov/}{website}
 }
