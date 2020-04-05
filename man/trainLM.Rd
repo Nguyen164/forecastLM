@@ -13,6 +13,7 @@ trainLM(
   lags = NULL,
   splines = NULL,
   events = NULL,
+  shocks = NULL,
   scale = NULL,
   step = FALSE,
   ...
@@ -70,6 +71,17 @@ For example, if the frequency of the `ts` object is 12 (i.e., monthly), you shou
 
 \item{events}{A list, optional, create hot encoding variables based on date/time objects,
 where the date/time objects must align with the input object index class (may not work when the input object is 'ts')}
+
+\item{shocks}{A list, optional, enable to model a single or multiple shocks,
+by defining for each shock a sub list with the following arguments:
+
+type - defines the type of growth, can be either 'linear' or 'log' scale
+
+start - defines the shock start date/time, must be within the time range of the input series. The class of this input must align with the ones of the input timestamp
+
+end - defines the shock end date/time, and can be outside the range of the input seires. The class of this input must align with the ones of the input timestamp
+
+peak - defines the peak of the shock date/time, and can be outside the range of the input seires. The class of this input must align with the ones of the input timestamp}
 
 \item{scale}{A character, scaling options of the series, methods available -
 c("log", "normal", "standard") for log transformation, normalization, or standardization of the series, respectively.

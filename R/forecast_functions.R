@@ -46,6 +46,17 @@
 #' Note when using `tsibble`` object as input, the dates or time inputs must align with the series index class.
 #' When using `ts` object, the input class should align with the converted index of the `ts`` object.
 #' For example, if the frequency of the `ts` object is 12 (i.e., monthly), you should use `Date`` objects to set the knots
+#' @param shocks A list, optional, enable to model a single or multiple shocks,
+#' by defining for each shock a sub list with the following arguments:
+#'
+#' type - defines the type of growth, can be either 'linear' or 'log' scale
+#'
+#' start - defines the shock start date/time, must be within the time range of the input series. The class of this input must align with the ones of the input timestamp
+#'
+#' end - defines the shock end date/time, and can be outside the range of the input seires. The class of this input must align with the ones of the input timestamp
+#'
+#' peak - defines the peak of the shock date/time, and can be outside the range of the input seires. The class of this input must align with the ones of the input timestamp
+#'
 #' @param scale A character, scaling options of the series, methods available -
 #' c("log", "normal", "standard") for log transformation, normalization, or standardization of the series, respectively.
 #' If set to NULL (default), no transformation will occur
