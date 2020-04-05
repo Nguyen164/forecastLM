@@ -113,6 +113,7 @@ trainLM <- function(input,
                     lags = NULL,
                     splines= NULL,
                     events = NULL,
+                    shocks = NULL,
                     scale = NULL,
                     step = FALSE,
                     ...){
@@ -220,62 +221,209 @@ trainLM <- function(input,
   }
 
   #----------------Checking the splines argument----------------
-  for(n in base::names(splines)){
+  if(!is.null(splines)){
+    for(n in base::names(splines)){
 
-    if(!"type" %in% names(splines[[n]])){
-      stop(paste("The",
-                 n,
-                 "element of the 'splines' argument is missing the 'type' sub-argument",
-                 sep = " "))
-    } else if(splines[[n]]$type != "linear" && splines[[n]]$type != "break"){
-      stop(paste("The", n, "element of the 'splines' argument is not valid, can be either 'linear' or 'break'"))
-    }
+      if(!"type" %in% names(splines[[n]])){
+        stop(paste("The",
+                   n,
+                   "element of the 'splines' argument is missing the 'type' sub-argument",
+                   sep = " "))
+      } else if(splines[[n]]$type != "linear" && splines[[n]]$type != "break"){
+        stop(paste("The", n, "element of the 'splines' argument is not valid, can be either 'linear' or 'break'"))
+      }
 
-    if(!"knots" %in% names(splines[[n]])){
-      stop(paste("The",
-                 n,
-                 "element of the 'splines' argument is missing the 'knots' sub-argument",
-                 sep = " "))
-    } else if(!base::any(freq$class %in% base::class(splines[[n]]$knots))){
-      stop(base::paste("The date/time object of the 'knots' argument does not align with the ones of the input object. Please check 'knots' input class of the",
-                       n, "element"))
-    }
+      if(!"knots" %in% names(splines[[n]])){
+        stop(paste("The",
+                   n,
+                   "element of the 'splines' argument is missing the 'knots' sub-argument",
+                   sep = " "))
+      } else if(!base::any(freq$class %in% base::class(splines[[n]]$knots))){
+        stop(base::paste("The date/time object of the 'knots' argument does not align with the ones of the input object. Please check 'knots' input class of the",
+                         n, "element"))
+      }
 
-    #----------------Creating the knots featurs----------------
+      #----------------Creating the knots featurs----------------
       knots_vec <- NULL
       # Case type is linear
-    if(splines[[n]]$type == "linear"){
-      knots_vec <- c(min(df[, time_stamp, drop = TRUE]), splines[[n]]$knots)
-      for(k in 2:base::length(knots_vec)){
-        knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
-                                    df[, time_stamp, drop = TRUE] <  knots_vec[k])
-        df[, base::paste(n, k-1, sep = "_")] <- 0
-        df[knot_index, base::paste(n, k-1, sep = "_")] <- knot_index - base::min(knot_index) + 1
-        new_features <- c(new_features, base::paste(n, k-1, sep = "_"))
+      if(splines[[n]]$type == "linear"){
+        knots_vec <- c(min(df[, time_stamp, drop = TRUE]), splines[[n]]$knots)
+        for(k in 2:base::length(knots_vec)){
+          knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[k-1] &
+                                      df[, time_stamp, drop = TRUE] <  knots_vec[k])
+          df[, base::paste(n, k-1, sep = "_")] <- 0
+          df[knot_index, base::paste(n, k-1, sep = "_")] <- knot_index - base::min(knot_index) + 1
+          new_features <- c(new_features, base::paste(n, k-1, sep = "_"))
+
+        }
+
+        knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[base::length(knots_vec)])
+        df[, base::paste(n, base::length(knots_vec), sep = "_")] <- 0
+        df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- knot_index - min(knot_index) + 1
+        new_features <- c(new_features, base::paste(n, base::length(knots_vec), sep = "_"))
+        # Case type is break
+      } else if(splines[[n]]$type == "break"){
+
+        knots_vec <- splines[[n]]$knots[base::which(splines[[n]]$knots < max(df[, time_stamp, drop = TRUE]) &
+                                                      splines[[n]]$knots > min(df[, time_stamp, drop = TRUE]))] %>%
+          base::sort()
+
+        df[, n] <- 0
+        for(k in base::seq_along(knots_vec)){
+          df[base::which(df[, time_stamp, drop = TRUE] >= knots_vec[k]), n] <- k
+        }
+
+        new_features <- c(new_features, n)
+
 
       }
-
-      knot_index <- base::which(df[, time_stamp, drop = TRUE] >=  knots_vec[base::length(knots_vec)])
-      df[, base::paste(n, base::length(knots_vec), sep = "_")] <- 0
-      df[knot_index, base::paste(n, base::length(knots_vec), sep = "_")] <- knot_index - min(knot_index) + 1
-      new_features <- c(new_features, base::paste(n, base::length(knots_vec), sep = "_"))
-      # Case type is break
-    } else if(splines[[n]]$type == "break"){
-
-      knots_vec <- splines[[n]]$knots[base::which(splines[[n]]$knots < max(df[, time_stamp, drop = TRUE]) &
-                                                    splines[[n]]$knots > min(df[, time_stamp, drop = TRUE]))] %>%
-        base::sort()
-
-      df[, n] <- 0
-      for(k in base::seq_along(knots_vec)){
-        df[base::which(df[, time_stamp, drop = TRUE] >= knots_vec[k]), n] <- k
-      }
-
-      new_features <- c(new_features, n)
-
-
     }
   }
+
+
+  #----------------Checking the shocks argument----------------
+  if(!is.null(shocks)){
+    for(n in base::names(shocks)){
+
+      if(!"type" %in% names(shocks[[n]])){
+        stop(paste("The",
+                   n,
+                   "element of the 'shocks' argument is missing the 'type' sub-argument",
+                   sep = " "))
+      } else if(shocks[[n]]$type != "linear" && shocks[[n]]$type != "log"){
+        stop(paste("The", n, "element of the 'shocks' argument is not valid, can be either 'linear' or 'log'"))
+      }
+
+      #Chacking the start argument
+      if(!"start" %in% names(shocks[[n]])){
+        stop(paste("The",
+                   n,
+                   "element of the 'shocks' argument is missing the 'start' object",
+                   sep = " "))
+      } else if(!base::any(freq$class %in% base::class(shocks[[n]]$start))){
+        stop(base::paste("The date/time object of the 'start' argument does not align with the ones of the input object. Please check 'start' input class of the",
+                         n, "element"))
+      }
+      # Chacking the end argument
+      if(!"end" %in% names(shocks[[n]])){
+        stop(paste("The",
+                   n,
+                   "element of the 'shocks' argument is missing the 'end' object",
+                   sep = " "))
+      } else if(!base::any(freq$class %in% base::class(shocks[[n]]$start))){
+        stop(base::paste("The date/time object of the 'start' argument does not align with the ones of the input object. Please check 'end' object class of the",
+                         n, "element"))
+      }
+
+      # Chacking the peak argument
+      if(!"peak" %in% names(shocks[[n]])){
+        stop(paste("The",
+                   n,
+                   "element of the 'shocks' argument is missing the 'peak' object",
+                   sep = " "))
+      } else if(!base::any(freq$class %in% base::class(shocks[[n]]$peak))){
+        stop(base::paste("The date/time object of the 'peak' argument does not align with the ones of the input object. Please check 'peak' object class of the",
+                         n, "element"))
+      }
+
+
+      # Check the start, end, peak order
+
+      if(shocks[[n]]$start > base::max(df[, time_stamp, drop = TRUE])) {
+        stop(base::paste("Error on the 'shocks' argument - the 'start' object is outsied the bounds of the series timestamp.",
+                         "Please check the setting of the ", n, "element of the argument"))
+      } else if(shocks[[n]]$start > shocks[[n]]$peak){
+        stop(base::paste("Error on the 'shocks' argument - the 'start' object time/date must be prior to the ones of the `peak` object",
+                         "Please check the setting of the ", n, "element of the argument"))
+      } else if(shocks[[n]]$end < shocks[[n]]$peak){
+        stop(base::paste("Error on the 'shocks' argument - the 'peak' object time/date must be prior to the ones of the `end` object",
+                         "Please check the setting of the ", n, "element of the argument"))
+      }
+
+
+      #----------------Creating the shocks features----------------
+      df[, n] <- 0
+
+
+
+      # Case all dates are in the training set
+
+      if(shocks[[n]]$peak <= base::max(df[, time_stamp, drop = TRUE]) &&
+         shocks[[n]]$end <= base::max(df[, time_stamp, drop = TRUE])){
+
+        r_up <- r_down <- rate_down <- peak_value <- NULL
+        r_up <- which(df[, time_stamp, drop = TRUE] >= shocks[[n]]$start &
+                        df[, time_stamp, drop = TRUE] <= shocks[[n]]$peak)
+
+        df[r_up , n] <- 1:base::length(r_up)
+
+
+        r_down <- which(df[, time_stamp, drop = TRUE] > shocks[[n]]$peak &
+                          df[, time_stamp, drop = TRUE] <= shocks[[n]]$end)
+
+
+        rate_down <- base::length(r_up) / (base::length(r_down) + 1)
+        peak_value <-  base::length(r_up)
+
+
+        df[r_down , n] <- base::seq(from = peak_value - rate_down,
+                                    to =  rate_down,
+                                    by = -rate_down)
+
+        new_features <- c(new_features, n)
+        # Case peak is in the training set, end is outside
+      } else if(shocks[[n]]$peak <= base::max(df[, time_stamp, drop = TRUE]) &&
+                shocks[[n]]$end > base::max(df[, time_stamp, drop = TRUE])){
+
+        down_units <- r_up <- r_down <- peak_value <- future_df <- rate_down <- r_train <- r_end <- NULL
+
+
+        r_up <- which(df[, time_stamp, drop = TRUE] >= shocks[[n]]$start &
+                        df[, time_stamp, drop = TRUE] <= shocks[[n]]$peak)
+
+        down_units <- (base::as.numeric(shocks[[n]]$end - shocks[[n]]$peak)  -
+                         base::as.numeric((shocks[[n]]$peak - shocks[[n]]$start)/length(r_up))) /
+          base::as.numeric((shocks[[n]]$peak - shocks[[n]]$start)/length(r_up))
+
+        peak_value <-  base::length(r_up)
+
+        future_df <- tsibble::append_row(df,
+                                         n = base::ceiling(down_units) -
+                                           base::length(base::which(df[, time_stamp, drop = TRUE] >
+                                                                      shocks[[n]]$peak)))
+
+        r_down <- which(future_df[, time_stamp, drop = TRUE] > shocks[[n]]$peak &
+                          future_df[, time_stamp, drop = TRUE] <= shocks[[n]]$end)
+
+        rate_down <- base::length(r_up) / (base::length(r_down) + 1)
+
+
+        r_train <- r_down[which(!is.na(future_df$y[r_down]))]
+
+        r_end <- which(future_df[, time_stamp, drop = TRUE] > shocks[[n]]$peak &
+                         future_df[, time_stamp, drop = TRUE] <= shocks[[n]]$end)
+
+
+
+
+        df[r_train , n] <- base::seq(from = peak_value - rate_down,
+                                     to =  rate_down,
+                                     by = -rate_down)[which(!is.na(future_df$y[r_down]))]
+
+        new_features <- c(new_features, n)
+
+        # Case peak and end are outside the training
+      } else if(shocks[[n]]$peak >  base::max(df[, time_stamp, drop = TRUE]) &&
+                shocks[[n]]$start <= base::max(df[, time_stamp, drop = TRUE])){
+
+        r_up  <- NULL
+        r_up <- which(df[, time_stamp, drop = TRUE] >= shocks[[n]]$start &
+                        df[, time_stamp, drop = TRUE] <= shocks[[n]]$peak)
+
+        df[r_up , n] <- 1:base::length(r_up)
+        new_features <- c(new_features, n)
+      }
+    }}
 
   #----------------Scalling the series----------------
   if(!base::is.null(scale)){
@@ -760,6 +908,7 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
       }
     }
   }
+
 
   #---------------- Setting the seasonal arguments----------------
   seasonal <- model$parameters$seasonal
