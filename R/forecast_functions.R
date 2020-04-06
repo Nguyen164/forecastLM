@@ -367,7 +367,7 @@ trainLM <- function(input,
         r_up <- which(df[, time_stamp, drop = TRUE] >= shocks[[n]]$start &
                         df[, time_stamp, drop = TRUE] <= shocks[[n]]$peak)
 
-        if(shock[[n]]$type == "linear"){
+        if(shocks[[n]]$type == "linear"){
           df[r_up , n] <- 1:base::length(r_up)
 
 
@@ -382,7 +382,7 @@ trainLM <- function(input,
           df[r_down , n] <- base::seq(from = peak_value - rate_down,
                                       to =  rate_down,
                                       by = -rate_down)
-        } else if(shock[[n]]$type == "log"){
+        } else if(shocks[[n]]$type == "log"){
           df[r_up , n] <- log(1:base::length(r_up) + log_inflator)
 
           r_down <- which(df[, time_stamp, drop = TRUE] > shocks[[n]]$peak &
@@ -406,7 +406,7 @@ trainLM <- function(input,
         r_up <- which(df[, time_stamp, drop = TRUE] >= shocks[[n]]$start &
                         df[, time_stamp, drop = TRUE] <= shocks[[n]]$peak)
 
-        if(shock[[n]]$type == "linear"){
+        if(shocks[[n]]$type == "linear"){
           df[r_up , n] <- 1:base::length(r_up)
 
 
@@ -440,7 +440,7 @@ trainLM <- function(input,
                                        to =  rate_down,
                                        by = -rate_down)[which(!is.na(future_df$y[r_down]))]
 
-        } else if(shock[[n]]$type == "log"){
+        } else if(shocks[[n]]$type == "log"){
 
           df[r_up , n] <- base::log(1:base::length(r_up) + log_inflator)
 
@@ -488,9 +488,9 @@ trainLM <- function(input,
         r_up <- which(df[, time_stamp, drop = TRUE] >= shocks[[n]]$start &
                         df[, time_stamp, drop = TRUE] <= shocks[[n]]$peak)
 
-        if(shock[[n]]$type == "linear"){
+        if(shocks[[n]]$type == "linear"){
           df[r_up , n] <- 1:base::length(r_up)
-        } else if(shock[[n]]$type == "log"){
+        } else if(shocks[[n]]$type == "log"){
           df[r_up , n] <- base::log(1:base::length(r_up) + log_inflator)
         }
         new_features <- c(new_features, n)
@@ -853,6 +853,7 @@ trainLM <- function(input,
                                    lags = lags,
                                    events = events,
                                    splines = splines,
+                                   shocks = shocks,
                                    step = step,
                                    scale = scale,
                                    scaling_parameters = scaling_parameters,
