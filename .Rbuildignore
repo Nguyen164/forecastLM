@@ -5,3 +5,4 @@
 ^docs$
 ^CRAN-RELEASE$
 ^man/figures/*.*$
+^vignettes/*.*$
