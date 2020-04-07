@@ -357,19 +357,19 @@ trainLM <- function(input,
 
       log_inflator <- 1
 
+      down_units <- r_up <- r_down <- peak_value <- future_df <- rate_down <- r_train <- r_end <- NULL
+
+
+      r_up <- which(df[, time_stamp, drop = TRUE] >= shocks[[n]]$start &
+                      df[, time_stamp, drop = TRUE] <= shocks[[n]]$peak)
+
 
       # Case all dates are in the training set
-      down_units <- r_up <- r_down <- peak_value <- future_df <- rate_down <- r_train <- r_end <- NULL
       if(shocks[[n]]$peak <= base::max(df[, time_stamp, drop = TRUE]) &&
          shocks[[n]]$end <= base::max(df[, time_stamp, drop = TRUE])){
 
-
-        r_up <- which(df[, time_stamp, drop = TRUE] >= shocks[[n]]$start &
-                        df[, time_stamp, drop = TRUE] <= shocks[[n]]$peak)
-
         if(shocks[[n]]$type == "linear"){
           df[r_up , n] <- 1:base::length(r_up)
-
 
           r_down <- which(df[, time_stamp, drop = TRUE] > shocks[[n]]$peak &
                             df[, time_stamp, drop = TRUE] <= shocks[[n]]$end)
@@ -398,18 +398,17 @@ trainLM <- function(input,
                                                 by = -rate_down) + log_inflator)
         }
 
+        shocks[[n]]$future_values <- NULL
+
         new_features <- c(new_features, n)
         # Case peak is in the training set, end is outside
       } else if(shocks[[n]]$peak <= base::max(df[, time_stamp, drop = TRUE]) &&
                 shocks[[n]]$end > base::max(df[, time_stamp, drop = TRUE])){
 
-        r_up <- which(df[, time_stamp, drop = TRUE] >= shocks[[n]]$start &
-                        df[, time_stamp, drop = TRUE] <= shocks[[n]]$peak)
+
 
         if(shocks[[n]]$type == "linear"){
           df[r_up , n] <- 1:base::length(r_up)
-
-
 
           down_units <- (base::as.numeric(shocks[[n]]$end - shocks[[n]]$peak)  -
                            base::as.numeric((shocks[[n]]$peak - shocks[[n]]$start)/length(r_up))) /
@@ -433,12 +432,22 @@ trainLM <- function(input,
           r_end <- which(future_df[, time_stamp, drop = TRUE] > shocks[[n]]$peak &
                            future_df[, time_stamp, drop = TRUE] <= shocks[[n]]$end)
 
+          down_vector <-  base::seq(from = peak_value - rate_down,
+                                    to =  rate_down,
+                                    by = -rate_down)
 
 
 
-          df[r_train , n] <- base::seq(from = peak_value - rate_down,
-                                       to =  rate_down,
-                                       by = -rate_down)[which(!is.na(future_df$y[r_down]))]
+          df[r_train , n] <- down_vector[which(!is.na(future_df$y[r_down]))]
+
+          shocks[[n]]$future_values <- down_vector[(base::length(which(!is.na(future_df$y[r_down]))) + 1):length(down_vector)]
+
+
+
+
+
+
+
 
         } else if(shocks[[n]]$type == "log"){
 
