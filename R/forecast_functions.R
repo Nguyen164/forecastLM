@@ -355,6 +355,7 @@ trainLM <- function(input,
       #----------------Creating the shocks features----------------
       df[, n] <- 0
 
+      # Case using log transformation
       log_inflator <- 1
 
       down_units <- r_up <- r_down <- peak_value <- future_df <- rate_down <- r_train <- r_end <- NULL
@@ -365,7 +366,7 @@ trainLM <- function(input,
 
 
       # Case all dates are in the training set
-      #-------------------------------------------------
+      #***************************************
       if(shocks[[n]]$peak <= base::max(df[, time_stamp, drop = TRUE]) &&
          shocks[[n]]$end <= base::max(df[, time_stamp, drop = TRUE])){
 
@@ -383,6 +384,7 @@ trainLM <- function(input,
           df[r_down , n] <- base::seq(from = peak_value - rate_down,
                                       to =  rate_down,
                                       by = -rate_down)
+          # Transformation
         if(shocks[[n]]$type == "log"){
           df[r_up , n] <- log( df[r_up , n] + log_inflator)
           df[r_down , n] <- base::log(df[r_down , n] + log_inflator)
@@ -392,7 +394,7 @@ trainLM <- function(input,
 
         new_features <- c(new_features, n)
         # Case peak is in the training set, end is outside
-        #-------------------------------------------------
+        #*************************************************
       } else if(shocks[[n]]$peak <= base::max(df[, time_stamp, drop = TRUE]) &&
                 shocks[[n]]$end > base::max(df[, time_stamp, drop = TRUE])){
 
@@ -441,7 +443,7 @@ trainLM <- function(input,
         new_features <- c(new_features, n)
 
         # Case peak and end are outside the training
-        #-------------------------------------------------
+        #*******************************************
       } else if(shocks[[n]]$peak >  base::max(df[, time_stamp, drop = TRUE]) &&
                 shocks[[n]]$start <= base::max(df[, time_stamp, drop = TRUE])){
 
@@ -455,7 +457,8 @@ trainLM <- function(input,
           df[r_up , n] <- base::log(1:base::length(r_up) + log_inflator)
         }
 
-        shocks[[n]]$future_values <- NULL
+        # In this case will pass the first value for the future df without transformation
+        shocks[[n]]$future_values <- base::length(r_up) + 1
 
         new_features <- c(new_features, n)
       }
