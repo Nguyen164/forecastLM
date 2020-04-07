@@ -950,6 +950,85 @@ forecastLM <- function(model, newdata = NULL, h, pi = c(0.95, 0.80)){
   }
 
 
+  #---------------- Set shocks ----------------
+  if(!base::is.null(model$parameters$shocks)){
+    shocks <- model$parameters$shocks
+    for(n in names(shocks)){
+      # Case all dates are in the training set
+      #***************************************
+      if(shocks[[n]]$end < base::min(forecast_df[, model$parameters$index, drop = TRUE])){
+        forecast_df[, n] <- 0
+        # Case peak is in the training set, end is outside
+        #*************************************************
+      } else if(shocks[[n]]$peak < base::min(forecast_df[, model$parameters$index, drop = TRUE]) &&
+                shocks[[n]]$end >= base::min(forecast_df[, model$parameters$index, drop = TRUE])){
+        forecast_df[, n] <- 0
+
+        forecast_df[1:base::length(shocks[[n]]$future_values),n] <- shocks[[n]]$future_values
+        # Case peak and end are outside the training
+        #*******************************************
+      } else if(shocks[[n]]$peak >= base::min(forecast_df[, model$parameters$index, drop = TRUE]) &&
+                shocks[[n]]$end > base::min(forecast_df[, model$parameters$index, drop = TRUE])){
+
+        r_up <- r_down <- NULL
+
+        r_up <- base::which(shocks[[n]]$peak >= forecast_df[, model$parameters$index, drop = TRUE])
+
+
+        forecast_df[, n] <- 0
+        forecast_df[r_up, n] <- shocks[[n]]$future_values:(shocks[[n]]$future_values + base::length(r_up) - 1)
+        peak_value <- (shocks[[n]]$future_values + base::length(r_up) - 1)
+        # Case end within the forecast horizon
+        #*************************************
+        if(shocks[[n]]$end <= base::max(forecast_df[, model$parameters$index, drop = TRUE])){
+          r_down <- base::which(forecast_df[, model$parameters$index, drop = TRUE] > shocks[[n]]$peak &
+                                  forecast_df[, model$parameters$index, drop = TRUE] <= shocks[[n]]$end)
+
+          rate_down <- peak_value / (base::length(r_down) + 1)
+
+
+
+          forecast_df[r_down , n] <- base::seq(from = peak_value - rate_down,
+                                               to =  rate_down,
+                                               by = -rate_down)
+
+
+        } else if(shocks[[n]]$end > base::max(forecast_df[, model$parameters$index, drop = TRUE])){
+
+          df[r_up , n] <- 1:base::length(r_up)
+
+          up_interval <- base::ceiling(base::as.numeric((shocks[[n]]$peak - shocks[[n]]$start) / peak_value ))
+
+          down_units <- base::as.numeric(shocks[[n]]$end - shocks[[n]]$peak) / up_interval
+
+          future_df <- tsibble::append_row(forecast_df,
+                                           n = base::ceiling(down_units) -
+                                             base::length(base::which(forecast_df[, model$parameters$index, drop = TRUE] >
+                                                                        shocks[[n]]$peak)))
+
+          # Calculate the unit decrease
+
+          r_down <- which(future_df[, model$parameters$index, drop = TRUE] > shocks[[n]]$peak &
+                            future_df[, model$parameters$index, drop = TRUE] <= shocks[[n]]$end)
+
+          rate_down <- peak_value / (base::length(r_down) + 1)
+
+
+          r_train <- r_down[which(!is.na(future_df$y[r_down]))]
+
+
+          down_vector <-  base::seq(from = peak_value - rate_down,
+                                    to =  rate_down,
+                                    by = -rate_down)
+
+          future_df[r_train , n] <- down_vector[which(!is.na(future_df[r_down, n]))]
+
+        }
+
+      }
+    }
+  }
+
   #---------------- Setting the seasonal arguments----------------
   seasonal <- model$parameters$seasonal
 
